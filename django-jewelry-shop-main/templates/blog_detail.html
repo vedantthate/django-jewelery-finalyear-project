@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <!-- Featured Image -->
+  <img src="{{ blog.image.url }}" class="blog-banner" alt="{{ blog.title }}">
+
+  <div class="blog-container">
+    <h1 class="blog-title">{{ blog.title }}</h1>
+    <div class="blog-meta">
+      Posted on {{ blog.date|date:"F j, Y" }}
+      {% if blog.author %} | By {{ blog.author }} {% endif %}
+    </div>
+
+    <div class="blog-content">
+      {{ blog.content|safe }}
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="blog-footer d-flex justify-content-between align-items-center">
+      <a href="{% url 'store:blog_list' %}" class="btn-back">← Back to Blog</a>
+      <span class="text-muted">Golden Glamour © {{ now|date:"Y" }}</span>
+    </div>
+  </div>
+{% endblock content %}

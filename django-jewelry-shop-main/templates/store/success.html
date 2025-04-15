@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+{% include 'partials/_messages.html' %}
+<div class="container text-center my-5">
+    <div class="alert alert-success">
+        <h2 class="display-4">🎉 Success! 🎉</h2>
+        <p class="lead">Your action was completed successfully.</p>
+    </div>
+
+    <a href="{% url 'store:home' %}" class="btn btn-primary">Go to Home</a>
+    <a href="{% url 'store:orders' %}" class="btn btn-secondary">View Orders</a>
+</div>
+{% endblock %}

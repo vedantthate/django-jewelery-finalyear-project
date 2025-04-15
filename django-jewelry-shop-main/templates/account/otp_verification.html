@@ -1,0 +1,67 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% comment %} {% include 'partials/_messages.html' %}
+<form method="POST">
+    {% csrf_token %}
+    <label>Enter OTP:</label>
+    <input type="text" name="otp" required>
+    <button type="submit">Verify</button>
+</form> {% endcomment %}
+
+<div class="d-flex justify-content-center align-items-center" style="height: 76vh;">
+    <div class="card p-4" style="width: 100%; max-width: 500px;">
+        {% include 'partials/_messages.html' %}
+        <h3 class="text-center">Enter OTP</h3>
+        <p>We've sent an OTP to your email. It is valid for <strong>2 minutes</strong>.</p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="otp" class="form-label">Enter OTP:</label>
+                <input type="text" name="otp" class="form-control" placeholder="Enter 6-digit OTP" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin:auto 160px;">Verify</button>
+        </form>
+        <p id="countdown" class="text-danger mt-3"></p>
+        <a href="{% url 'store:resend_otp' %}" class="btn btn-secondary mt-3" id="resend-btn" style="display: none;">
+            Resend OTP
+        </a>
+    </div>
+</div>
+
+<script>
+    // Retrieve OTP expiration time from Django session
+    const otpValidDate = "{{ request.session.otp_valid_date }}";
+
+    if (otpValidDate) {
+        const otpValidUntil = new Date(otpValidDate).getTime();
+        const otpDuration = 2 * 60 * 1000; // 2 minutes in milliseconds
+        const otpStartTime = otpValidUntil - otpDuration; // Calculate OTP start time
+
+        function updateCountdown() {
+            let now = new Date().getTime();
+            let timeLeft = otpValidUntil - now;
+
+            if (timeLeft > 0 && timeLeft <= otpDuration) {
+                let minutes = Math.floor(timeLeft / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                document.getElementById("countdown").innerText = `OTP expires in ${minutes} min ${seconds} sec`;
+            } else {
+                document.getElementById("countdown").innerText = "OTP has expired!";
+                document.getElementById("resend-btn").style.display = "block";
+                clearInterval(countdownInterval);
+            }
+        }
+
+        // Start countdown every second
+        let countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+    }
+</script>
+
+
+
+{% endblock content %}

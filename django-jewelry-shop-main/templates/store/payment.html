@@ -1,0 +1,43 @@
+{% block payment-gateway %}
+<form method="post" action="{% url 'store:generate-payment' %}">
+    {% csrf_token %}
+    {% csrf_token %}
+    {% if addresses %}
+      {% for address in addresses %}
+        <div class="mb-3">
+        <input type="radio" name="address" value="{{address.id}}"> <strong>Address {{forloop.counter}}</strong> <br>
+       {{address.address}}, {{address.city}}, {{address.state}}
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <button type="submit" class="btn btn-dark btn-lg btn-outline-dark" id="rzp-button1" name="payment_method" value="Online" type="submit">
+      <i class="bi bi-currency-rupee"></i></i>Pay with Razorpay</button>
+</form>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        var options = {
+        
+          key: "{{ razorpay_key }}", 
+          amount: "{{ pay_amount }}", 
+          currency: "INR",
+          name: "Acme Corp", 
+          description: "Test Transaction",
+          order_id: "{{ order_id }}", 
+          callback_url: "http://127.0.0.1:8000/success/",
+        "theme": {
+                    "color": "#3399cc"
+                }
+        };
+        
+        var rzp1 = new Razorpay(options);
+        
+        document.getElementById("rzp-button1").onclick = function (e) {
+          rzp1.open();
+          e.preventDefault();
+        };
+      </script>
+
+
+{% endblock payment-gateway %}

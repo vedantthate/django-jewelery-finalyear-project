@@ -1,0 +1,131 @@
+<script>
+    const revenueChartCtx = document.getElementById('revenueBreakdownChart').getContext('2d');
+
+    // Revenue values from backend
+    const revenueCOD = {{ total_revenue_cod|default:0 }};
+    const revenueOnline = {{ total_revenue_online|default:0 }};
+
+    const maxRevenue = Math.max(revenueCOD, revenueOnline);
+    const minRevenue = Math.min(revenueCOD, revenueOnline);
+
+    // Dynamically set min: use 0 if any value < 1000
+    const minX = minRevenue < 1000 ? 0 : minRevenue;
+
+    // Suggest max rounded to next 1000 + buffer
+    const suggestedMax = Math.ceil(maxRevenue / 1000) * 1000 + 1000;
+
+    // Calculate total revenue
+    const totalRevenue = revenueCOD + revenueOnline;
+
+    // Display total revenue
+    document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString();
+
+    const revenueBreakdownChart = new Chart(revenueChartCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Cash', 'Online'],
+            datasets: [{
+                label: 'Revenue',
+                data: [revenueCOD, revenueOnline],
+                backgroundColor: ['#FF6384', '#36A2EB'],
+                hoverBackgroundColor: ['#FF4371', '#2A7DB0'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw || 0;
+                            return `₹ ${value.toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    min: minX,  // Set min to the value of the smaller revenue or 0
+                    max: suggestedMax,
+                    ticks: {
+                        stepSize: 1000,
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();
+                        },
+                        font: {
+                            size: 14,  // Increase font size
+                            weight: 'bold',  // Make font bold
+                            family: 'Arial, sans-serif',  // Set font family for clarity
+                            color: '#333'  // Set a dark color for better contrast
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Revenue (INR)',
+                        font: {
+                            size: 16,  // Increase font size of title
+                            weight: 'bold',
+                            family: 'Arial, sans-serif',
+                            color: '#333'  // Darker color for better visibility
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Payment Method',
+                        font: {
+                            size: 16,  // Increase font size of title
+                            weight: 'bold',
+                            family: 'Arial, sans-serif',
+                            color: '#333'  // Darker color for better visibility
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: 14,  // Increase font size
+                            weight: 'bold',  // Make font bold
+                            family: 'Arial, sans-serif',  // Set font family for clarity
+                            color: '#333'  // Set a dark color for better contrast
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    function updateChart() {
+        const selectedFilter = document.getElementById('paymentFilter').value;
+
+        let updatedCOD = 0;
+        let updatedOnline = 0;
+
+        switch (selectedFilter) {
+            case 'all':
+                updatedCOD = revenueCOD;
+                updatedOnline = revenueOnline;
+                break;
+            case 'cod':
+                updatedCOD = revenueCOD;
+                updatedOnline = 0; // Set Online to 0 if Cash on Delivery is selected
+                break;
+            case 'online':
+                updatedOnline = revenueOnline;
+                updatedCOD = 0; // Set COD to 0 if Online payment is selected
+                break;
+        }
+
+        // Update the chart data
+        revenueBreakdownChart.data.datasets[0].data = [updatedCOD, updatedOnline];
+        revenueBreakdownChart.update();
+
+        // Update total revenue
+        const updatedTotalRevenue = updatedCOD + updatedOnline;
+        document.getElementById('totalRevenue').textContent = updatedTotalRevenue.toLocaleString();
+    }
+</script>

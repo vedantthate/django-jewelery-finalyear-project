@@ -1,0 +1,76 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+</head>
+<body style="background-color: #f8f9fa; padding: 20px; font-family: Arial, sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
+        <h2 style="text-align: center; color: #007bff;">Thank You for Your Order!</h2>
+        <p>Hello <strong>{{ user }}</strong>,</p>
+        <p>Thank you for shopping with <strong>Golden Glamour</strong>! Your order 
+           <strong>#JWL{{ order_id }}</strong> has been successfully confirmed.</p>
+
+        <h4 style="border-bottom: 2px solid #ddd; padding-bottom: 5px;">Order Summary</h4>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+            <thead>
+                <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Product</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Quantity</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Price</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ item.product.title }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ item.quantity }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹{{ item.price }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹{{ item.price }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3" style="padding: 8px; border: 1px solid #ddd; text-align: right;"><strong>Subtotal</strong></td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹{{ subtotal|intcomma }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding: 8px; border: 1px solid #ddd; text-align: right;"><strong>Shipping Charges</strong></td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹{{ shiping_amount }}</td>
+                </tr>
+                <tr style="background-color: #f9f9f9; font-weight: bold;">
+                    <td colspan="3" style="padding: 8px; border: 1px solid #ddd; text-align: right;">Total Amount</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹{{ subtotal|add:shiping_amount|intcomma }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+
+        <h4 style="border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 20px;">Shipping Details</h4>
+        <p>
+            <strong>Tracking ID:</strong> {{ tracking_uid }}<br>
+            <strong>Payment Mode:</strong> {{ status }}<br>
+            <strong>Name:</strong> {{ shipping_details.name }}<br>
+            <strong>Address:</strong> {{ shipping_details.address }}<br>
+            <strong>Phone:</strong> {{ shipping_details.phone }}
+        </p>
+
+        <p>Your order will be shipped soon. We will notify you once it is dispatched.</p>
+
+        <a href="{% url 'store:track_order_direct' tracking_uid %}" 
+        style="display: inline-block; padding: 10px 20px; background-color: #007bff; 
+          color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">
+        Track Order
+        </a>
+
+        <p style="margin-top: 20px; font-size: 12px; text-align: center; color: #777;">If you have any questions, contact us at support@example.com</p>
+
+        <h5 style="text-align: center; margin-top: 10px;">
+            Thanks,<br>
+            <strong>Golden Glamour</strong>
+        </h5>
+    </div>
+</body>
+</html>

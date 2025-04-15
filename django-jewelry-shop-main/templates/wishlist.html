@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'partials/_messages.html' %}
+<div class="container py-4">
+  <h2 class="text-center mb-4">Your Wishlist</h2>
+
+  <div class="row">
+    {% if wishlist_items %}
+      {% for item in wishlist_items %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card border-0 shadow-sm">
+            <a href="{% url 'store:product-detail' item.product.slug %}">
+              <img src="{{ item.product.product_image.url }}" class="card-img-top" alt="{{ item.product.title }}">
+            </a>
+            <div class="card-body text-center">
+              <h5 class="card-title">
+                <a class="text-dark text-decoration-none" href="{% url 'store:product-detail' item.product.slug %}">
+                  {{ item.product.title }}
+                </a>
+              </h5>
+              <p class="text-muted">₹{{ item.product.price }}</p>
+              <a href="{% url 'store:add-to-wishlist' item.product.id %}" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-heart-broken"></i> Remove
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12 text-center">
+        <p class="lead">Your wishlist is empty.</p>
+        <a href="{% url 'store:home' %}" class="btn btn-dark">Browse Products</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

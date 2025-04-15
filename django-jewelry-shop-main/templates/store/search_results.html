@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+  <h4 class="mb-4">Search Results for "<strong>{{ query }}</strong>"</h4>
+
+  {% if products %}
+  <div class="row mb-3 align-items-center">
+    <div class="col-lg-6 mb-2 mb-lg-0">
+      <p class="text-small text-muted mb-0">
+        Showing {{ products.start_index }}–{{ products.end_index }} of {{ products.paginator.count }} results
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <ul class="list-inline d-flex align-items-center justify-content-lg-end mb-0">
+        <li class="list-inline-item">
+          <form method="get" class="d-flex align-items-center">
+            <input type="hidden" name="q" value="{{ query }}">
+            <select class="selectpicker ml-auto" name="sorting" onchange="this.form.submit()" data-width="200" data-style="bs-select-form-control" data-title="Default sorting">
+              <option value="default" {% if sort_option == 'default' %}selected{% endif %}>Default sorting</option>
+              <option value="low-high" {% if sort_option == 'low-high' %}selected{% endif %}>Price: Low to High</option>
+              <option value="high-low" {% if sort_option == 'high-low' %}selected{% endif %}>Price: High to Low</option>
+            </select>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for product in products %}
+    <div class="col-xl-3 col-lg-4 col-sm-6">
+      <div class="product text-center">
+        <div class="position-relative mb-3">
+          <a class="d-block" href="{% url 'store:product-detail' product.slug %}">
+            {% if product.product_image %}
+              <img class="img-fluid w-100" src="{{ product.product_image.url }}" alt="{{product.title}}">
+            {% else %}
+              <img class="img-fluid w-100" src="{% static 'img/product-1.jpg' %}" alt="{{product.title}}">
+            {% endif %}
+          </a>
+
+          <div class="product-overlay">
+            <ul class="mb-0 list-inline">
+              <li class="list-inline-item m-0 p-0">
+                <a class="btn btn-sm btn-outline-dark" href="{% url 'store:add-to-wishlist' product.id %}">
+                  <i class="far fa-heart"></i>
+                </a>
+              </li>
+              <li class="list-inline-item m-0 p-0">
+                <form action="{% url 'store:add-to-cart' %}" method="get">
+                  <input type="hidden" name="prod_id" value="{{ product.id }}">
+                  <button type="submit" class="btn btn-sm btn-dark">Add to Cart</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <h6><a class="reset-anchor" href="{% url 'store:product-detail' product.slug %}">{{ product.title }}</a></h6>
+        <p class="small text-muted">₹{{ product.price }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="d-flex justify-content-center justify-content-lg-end mt-4">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% for num in products.paginator.page_range %}
+          {% if products.number == num %}
+            <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?q={{ query }}&sorting={{ sort_option }}&page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+
+  {% else %}
+  <div class="alert alert-warning" role="alert">
+    No products found matching your search.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

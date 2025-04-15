@@ -1,0 +1,293 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link rel="stylesheet" href="{% static 'css/custom_admin.css' %}">
+
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <i>📊</i> Golden Glamour Analytics Dashboard
+            </div>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <select class="filter-dropdown" id="timeRange" onchange="updateCharts()">
+                        <option value="">Select Time Range</option>
+                        <option value="this_month" {% if request.GET.time_range == "this_month" %}selected{% endif %}>This Month</option>
+                        <option value="last_month" {% if request.GET.time_range == "last_month" %}selected{% endif %}>Last Month</option>
+                        <option value="last_3_months" {% if request.GET.time_range == "last_3_months" %}selected{% endif %}>Last 3 Months</option>
+                        <option value="last_6_months" {% if request.GET.time_range == "last_6_months" %}selected{% endif %}>Last 6 Months</option>
+                        <option value="this_year" {% if request.GET.time_range == "this_year" %}selected{% endif %}>This Year</option>
+                    </select>
+                </div>
+            
+                <div class="filter-group">
+                    <input type="date" class="filter-dropdown" id="fromDate" name="from_date" value="{{ request.GET.from_date }}" onchange="updateCharts()">
+                </div>
+            
+                <div class="filter-group">
+                    <input type="date" class="filter-dropdown" id="toDate" name="to_date" value="{{ request.GET.to_date }}" onchange="updateCharts()">
+                </div>
+            
+                <button type="button" class="clear-btn" onclick="clearDates()">Clear Dates</button>
+            </div>
+            
+            <!-- Error message container -->
+            <div id="error-message" style="color: red; display: none;">Error: The selected date cannot be in the future!</div>
+        </div>
+        
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-title">Total Revenue</div>
+                <div class="metric-value">₹{{ total_revenue|floatformat:2 }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>15.2%
+                </div>
+                <div class="metric-comparison">vs previous period</div>
+            </div>
+    
+            <div class="metric-card">
+                <div class="metric-title">Total Orders</div>
+                <div class="metric-value">{{ total_orders }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>8.7%
+                </div>
+                <div class="metric-comparison">vs previous period</div>
+            </div>
+    
+            <div class="metric-card">
+                <div class="metric-title">Total Customers</div>
+                <div class="metric-value">{{ total_users }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>12.4%
+                </div>
+                <div class="metric-comparison">vs previous period</div>
+            </div>
+    
+            <div class="metric-card">
+                <div class="metric-title">Online Payments</div>
+                <div class="metric-value">₹{{ total_revenue_online|floatformat:2 }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>18.5%
+                </div>
+                <div class="metric-comparison">{{ total_online_orders|floatformat:0 }} orders</div>
+            </div>
+    
+            <div class="metric-card">
+                <div class="metric-title">COD Payments</div>
+                <div class="metric-value">₹{{ total_revenue_cod|floatformat:2 }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>10.1%
+                </div>
+                <div class="metric-comparison">{{ total_cod_orders|floatformat:0 }} orders</div>
+            </div>
+    
+            <div class="metric-card">
+                <div class="metric-title">Products</div>
+                <div class="metric-value">{{ product_count }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>5.3%
+                </div>
+                <div class="metric-comparison">in inventory</div>
+            </div>
+    
+            <div class="metric-card">
+                <div class="metric-title">Categories</div>
+                <div class="metric-value">{{ category_count }}</div>
+                <div class="metric-change positive-change">
+                    <span class="kpi-indicator kpi-up">↑</span>3.2%
+                </div>
+                <div class="metric-comparison">active categories</div>
+            </div>
+        </div>
+        
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Monthly Sales Trend (INR)</div>
+                    <div class="chart-actions">
+                        <button class="chart-btn" onclick="downloadChart('monthlySalesChart', 'monthly-sales.png')">Export PNG</button>
+                        <button class="chart-btn" onclick="montlysales()">Export CSV</button>
+                    </div>
+                </div>
+                <canvas id="monthlySalesChart"></canvas>
+                {% include 'admin/linechart.html' %}
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Revenue Breakdown</div>
+                    <div class="chart-actions">
+                        <button class="chart-btn" onclick="downloadChart('revenueBreakdownChart', 'revenue-breakdown.png')">Export PNG</button>
+                        <button class="chart-btn" onclick="revenuebreakdown()">Export CSV</button>
+                    </div>
+                </div>
+                <div class="filters">
+                    <select id="paymentFilter" onchange="updateChart()">
+                        <option value="all">All</option>
+                        <option value="online">Online</option>
+                        <option value="cod">Cash on Delivery</option>
+                    </select>
+                </div>
+                <div id="totalRevenueContainer" style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+                    Total Revenue: ₹ <span id="totalRevenue">0</span>
+                </div>
+                <canvas id="revenueBreakdownChart" width="400" height="400"></canvas>
+                {% include 'admin/donutchart.html' %}
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Top Selling Products</div>
+                    <div class="chart-actions">
+                        <button class="chart-btn" onclick="downloadChart('topProductsChart', 'top-products.png')">Export PNG</button>
+                        <button class="chart-btn" onclick="topproduct()">Export CSV</button>
+                    </div>
+                </div>
+                <div id="topProductName" style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 20px;"></div>
+                <canvas id="topProductsChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Order Status Distribution</div>
+                    <div class="chart-actions">
+                        <button class="chart-btn" onclick="downloadChart('orderStatusPieChart', 'order-status.png')">Export</button>
+                        <button class="chart-btn" onclick="downloadCSV()">Download CSV</button>
+                    </div>
+                </div>
+                <canvas id="orderStatusPieChart"></canvas>
+                {% include 'admin/piechart.html' %}
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        
+        function updateCharts() {
+            const timeRange = document.getElementById('timeRange').value;
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+    
+            const params = new URLSearchParams();
+    
+            if (timeRange) params.append('time_range', timeRange);
+            if (fromDate) params.append('from_date', fromDate);
+            if (toDate) params.append('to_date', toDate);
+    
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+        function clearDates() {
+            // Clear date fields
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+    
+            // Remove 'from_date' and 'to_date' parameters from the URL
+            const params = new URLSearchParams(window.location.search);
+            params.delete('from_date');
+            params.delete('to_date');
+    
+            // Update the URL without the date filter
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+        // Function to download chart as PNG
+        function downloadChart(chartId, filename) {
+            const canvas = document.getElementById(chartId);
+            if (!canvas) {
+                alert('Chart not found. Make sure it has rendered.');
+                return;
+            }
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = filename;
+            link.click();
+        }
+    
+        // Function to download chart data as CSV
+        function downloadCSV() {
+            const statusData = {{ status_data|safe }};
+            let csvContent = "data:text/csv;charset=utf-8,Status,Count\n";
+    
+            for (const [status, count] of Object.entries(statusData)) {
+                csvContent += `${status},${count}\n`;
+            }
+    
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "order_status_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function montlysales() {
+            const statusData = {{ chart_data|safe }};
+            let csvContent = "data:text/csv;charset=utf-8,Month,Sales\n";
+    
+            for (const [month, sales] of Object.entries(statusData)) {
+                csvContent += `${month},${sales}\n`;
+            }
+    
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "monthly_sales_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function topproduct() {
+            const statusData = {{ top_products_data|safe }};
+            let csvContent = "data:text/csv;charset=utf-8,Product,Sales\n";
+    
+            for (const [product, sales] of Object.entries(statusData)) {
+                csvContent += `${product},${sales}\n`;
+            }
+    
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "top_products_sales.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        
+        function revenuebreakdown() {
+            const codData = {{ total_revenue_cod|safe }};
+            const onlineData = {{ total_revenue_online|safe }};
+            let csvContent = "data:text/csv;charset=utf-8,Payment,Sales\n";
+            
+            // Assuming the data is structured as {month: revenue}, iterate over both datasets
+            for (const [month, codSales] of Object.entries(codData)) {
+                const onlineSales = onlineData[month] || 0; // Default to 0 if no online sales for that month
+                csvContent += `${month} (COD),${codSales}\n`;
+                csvContent += `${month} (Online),${onlineSales}\n`;
+            }
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "revenue_breakdown.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+
+    </script>
+    {% endblock %}

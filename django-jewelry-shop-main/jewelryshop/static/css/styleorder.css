@@ -1,0 +1,41 @@
+
+  .table-responsive {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 600px;
+      white-space: nowrap;
+  }
+
+  .table-responsive::-webkit-scrollbar {
+      height: 8px;
+  }
+
+  .table-responsive::-webkit-scrollbar-track {
+      background: #f1f1f1;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb:hover {
+      background: #555;
+  }
+
+  /* Optional tweak for small screens */
+  @media (max-width: 576px) {
+      .table th, .table td {
+          font-size: 12px;
+          padding: 6px;
+      }
+
+      img {
+          max-width: 100px !important;
+          height: auto;
+      }
+
+      .breadcrumb {
+          font-size: 14px;
+      }
+  }

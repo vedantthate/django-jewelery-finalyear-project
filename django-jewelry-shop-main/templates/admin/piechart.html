@@ -1,0 +1,144 @@
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+    // Pie Chart: Order Status Data (from Django context)
+    const statusData = {{ status_data|safe }};
+    
+    // Calculate total for percentage calculation
+    const totalOrders = Object.values(statusData).reduce((a, b) => a + b, 0);
+
+    // Pie Chart Configuration
+    const pieData = {
+        labels: Object.keys(statusData),
+        datasets: [{
+            label: 'Order Status',
+            data: Object.values(statusData),
+            backgroundColor: [
+                '#FF6384', // Delivered
+                '#36A2EB', // On The Way
+                '#FFCE56', // Pending
+                '#4BC0C0', // Accepted
+                '#FF9F40', // Packed
+                '#9966FF', // Out For Delivery
+                '#FF3399'  // Cancelled
+            ],
+            hoverOffset: 4
+        }]
+    };
+
+    const pieConfig = {
+        type: 'pie',
+        data: pieData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 10,
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const value = tooltipItem.raw;
+                            const percentage = ((value / totalOrders) * 100).toFixed(1);
+                            return `${tooltipItem.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#fff',
+                    font: {
+                        weight: 'bold'
+                    },
+                    formatter: function(value, context) {
+                        const percentage = ((value / totalOrders) * 100).toFixed(1);
+                        return `${value} (${percentage}%)`;
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    };
+
+    // Render Pie Chart
+    new Chart(
+        document.getElementById('orderStatusPieChart'),
+        pieConfig
+    );
+
+
+    // Bar Chart: Top Products Data (from Django context)
+    const topProductsData = {{ top_products_data|safe }};
+    const productNames = Object.keys(topProductsData);
+    const productCounts = Object.values(topProductsData);
+
+    // Find the index of the top product (with the highest count)
+    const topProductIndex = productCounts.indexOf(Math.max(...productCounts));
+
+    // Highlight the top product with a different color
+    const backgroundColors = productCounts.map((count, index) => {
+        return index === topProductIndex ? '#FF5733' : '#36A2EB'; // Highlight top product
+    });
+
+    // Display the name of the top product above the bar chart
+    document.getElementById('topProductName').innerHTML = `Top Product: ${productNames[topProductIndex]}`;
+
+    // Bar Chart Configuration
+    const barData = {
+        labels: productNames,
+        datasets: [{
+            label: 'Total Sold',
+            data: productCounts,
+            backgroundColor: backgroundColors,
+            borderRadius: 5,
+            borderColor: backgroundColors.map((color, index) => {
+                return index === topProductIndex ? '#FF0000' : 'transparent'; // Border color for top product
+            }),
+            borderWidth: 2
+        }]
+    };
+
+    const barConfig = {
+        type: 'bar',
+        data: barData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    };
+
+    // Render Bar Chart
+    new Chart(
+        document.getElementById('topProductsChart'),
+        barConfig
+    );
+
+
+    
+
+</script>

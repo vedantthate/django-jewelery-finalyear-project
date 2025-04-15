@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %}
+<section class="py-5">
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+    <div class="accordion" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q1">
+          <button
+            class="accordion-button"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#a1"
+          >
+            Do you offer free shipping?
+          </button>
+        </h2>
+        <div id="a1" class="accordion-collapse collapse show">
+          <div class="accordion-body">
+            Yes, we provide free shipping on all orders.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q2">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#a2"
+          >
+            Can I return customized jewelry?
+          </button>
+        </h2>
+        <div id="a2" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Unfortunately, customized items are non-returnable unless defective.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

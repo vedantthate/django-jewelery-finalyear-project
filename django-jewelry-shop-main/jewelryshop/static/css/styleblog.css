@@ -1,0 +1,94 @@
+
+    body {
+      background-color: #fdfaf6;
+      color: #4b3832;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .blog-header {
+      text-align: center;
+      padding: 80px 20px 40px;
+      background-color: #fff5e6;
+      border-bottom: 1px solid #e0c8ac;
+    }
+
+    .blog-header h1 {
+      font-weight: 700;
+      font-size: 3rem;
+      color: #c69c6d;
+    }
+
+    .blog-header p.lead {
+      font-size: 1.25rem;
+      color: #7d5a50;
+    }
+
+    .blog-card {
+      background-color: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .blog-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 1px solid #f1e4d1;
+    }
+
+    .blog-content {
+      padding: 25px;
+    }
+
+    .blog-content h5 {
+      color: #b07b50;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .blog-content .date {
+      font-size: 0.9rem;
+      color: #a49c94;
+      margin-bottom: 10px;
+    }
+
+    .blog-content p {
+      font-size: 0.95rem;
+      color: #4b3832;
+    }
+
+    .btn-gold {
+      background-color: #c69c6d;
+      color: white;
+      border-radius: 25px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      transition: 0.3s ease;
+    }
+
+    .btn-gold:hover {
+      background-color: #b5895e;
+      color: white;
+    }
+
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeUp 0.8s ease-in-out;
+    }

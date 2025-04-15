@@ -1,0 +1,37 @@
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fdfaf6;
+  color: #4b3832;
+}
+.contact-section {
+  padding: 60px 0;
+}
+.contact-card {
+  background-color: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+.form-control:focus {
+  border-color: #c69c6d;
+  box-shadow: 0 0 0 0.2rem rgba(198, 156, 109, 0.25);
+}
+.btn-gold {
+  background-color: #c69c6d;
+  color: white;
+  border: none;
+}
+.btn-gold:hover {
+  background-color: #b5895e;
+}
+.social-icons a {
+  margin-right: 15px;
+  color: #c69c6d;
+  font-size: 1.5rem;
+  transition: 0.3s;
+}
+.social-icons a:hover {
+  color: #a3754a;
+}

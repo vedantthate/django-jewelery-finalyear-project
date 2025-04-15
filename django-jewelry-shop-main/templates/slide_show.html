@@ -1,0 +1,101 @@
+
+{% load static %}
+{% block content %}
+
+<!-- HERO SLIDESHOW SECTION -->
+<div id="heroCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+    <div class="carousel-inner">
+      
+      <!-- SLIDE 1 -->
+      <div class="carousel-item active" data-interval="3000">
+        <div class="hero-slide" style="background-image: url('https://plus.unsplash.com/premium_photo-1661645433820-24c8604e4db5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8amV3ZWxyeXN8ZW58MHx8MHx8fDA%3D');">
+          <div class="hero-overlay">
+            <div class="container text-center text-white">
+              <p class="small text-uppercase mb-2">New Inspiration 2025</p>
+              <h1 class="h2 text-uppercase mb-3">20% off on new season</h1>
+              <a class="btn btn-dark" href="{% url 'store:all-categories' %}">Browse collections</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="carousel-item" data-interval="3000">
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1628926379972-9843ad139a8c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHJpbmd8ZW58MHx8MHx8fDA%3D');">
+          <div class="hero-overlay">
+            <div class="container text-center text-white">
+              <p class="small text-uppercase mb-2">Exclusive Collection</p>
+              <h1 class="h2 text-uppercase mb-3">Luxury Jewelry</h1>
+              <a class="btn btn-dark" href="{% url 'store:all-categories' %}">Shop Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- SLIDE 3 -->
+      <div class="carousel-item" data-interval="3000">
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1603974372039-adc49044b6bd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fGVhcnJpbmd8ZW58MHx8MHx8fDA%3D');">
+          <div class="hero-overlay">
+            <div class="container text-center text-white">
+              <p class="small text-uppercase mb-2">Timeless Elegance</p>
+              <h1 class="h2 text-uppercase mb-3">Discover Our New Collection</h1>
+              <a class="btn btn-dark" href="{% url 'store:all-categories' %}">Shop Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4 -->
+      <div class="carousel-item" data-interval="3000">
+        <div class="hero-slide" style="background-image: url('https://media.istockphoto.com/id/2193177583/photo/valentines-gift-caring-man-giving-luxury-necklace-to-beloved-girlfriend-putting-it-on-her.webp?a=1&b=1&s=612x612&w=0&k=20&c=8gVv0p7KtMwgWVD_yRGPixqJRvg2hc-c9mNwtsumbqI=');">
+          <div class="hero-overlay">
+            <div class="container text-center text-white">
+              <p class="small text-uppercase mb-2">Luxury Meets Style</p>
+              <h1 class="h2 text-uppercase mb-3">A Gift for Every Occasion</h1>
+              <a class="btn btn-dark" href="{% url 'store:all-categories' %}">Explore Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5 -->
+      <div class="carousel-item" data-interval="3000">
+        <div class="hero-slide" style="background-image: url('https://media.istockphoto.com/id/1313436134/photo/woman-wearing-luxury-wristwatch-closeup-of-hand.webp?a=1&b=1&s=612x612&w=0&k=20&c=d8bSRUNsP_9TCtAPlTvTNFz1z1zNs9U0dZQ72tqcjmI=');">
+          <div class="hero-overlay">
+            <div class="container text-center text-white">
+              <p class="small text-uppercase mb-2">Elevate Your Style</p>
+              <h1 class="h2 text-uppercase mb-3">Watches Crafted for You</h1>
+              <a class="btn btn-dark" href="{% url 'store:all-categories' %}">Explore Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 6 -->
+      <div class="carousel-item" data-interval="3000">
+        <div class="hero-slide" style="background-image: url('https://media.istockphoto.com/id/824287376/photo/woman-with-a-bracelet.webp?a=1&b=1&s=612x612&w=0&k=20&c=qucMilv64ahUAvXTgJhHrMkJ5GNMz4mot-YZOCB1wAo=');">
+          <div class="hero-overlay">
+            <div class="container text-center text-white">
+              <p class="small text-uppercase mb-2">Unparalleled Beauty</p>
+              <h1 class="h2 text-uppercase mb-3">Bracelets That Speak Elegance</h1>
+              <a class="btn btn-dark" href="{% url 'store:all-categories' %}">Explore Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <a class="carousel-control-prev" href="#heroCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#heroCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+  {% endblock content %}

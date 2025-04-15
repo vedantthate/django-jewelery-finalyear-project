@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<body>
+{% include 'partials/_messages.html' %}
+  <section class="contact-section">
+    <div class="container">
+      <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+          <h2 class="fw-bold">Get in Touch</h2>
+          <p>Have a question or custom order request? We’d love to hear from you!</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Contact Form -->
+        <div class="col-md-6">
+          <div class="contact-card">
+            <form method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label">Your Name</label>
+                <input type="text" name="name" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Message</label>
+                <textarea name="message" class="form-control" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-gold w-100">Send Message</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="col-md-6">
+          <div class="contact-card">
+            <h5 class="mb-3">Visit Our Store</h5>
+            <p><strong>Golden Glamour</strong><br>
+              123 Sparkle Street,<br>
+              Jewel City, GL 456789, Delhi<br>
+              Phone: +91 8956231245<br>
+              Email: contact@goldenglamour.com
+            </p>
+            <hr>
+            <h5 class="mb-3">Follow Us</h5>
+            <div class="social-icons">
+              <a href="#"><i class="bi bi-facebook"></i></a>
+              <a href="#"><i class="bi bi-instagram"></i></a>
+              <a href="#"><i class="bi bi-pinterest"></i></a>
+              <a href="#"><i class="bi bi-twitter-x"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+  {% endblock content %}

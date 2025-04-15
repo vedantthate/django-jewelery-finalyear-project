@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  
+<body>
+  <div class="container blog-header">
+    <h1>Golden Glamour Blog</h1>
+    <p class="lead">Inspiration, Trends & Jewelry Styling Tips</p>
+  </div>
+
+  <div class="container pb-5 pt-3">
+    <div class="row g-4">
+      {% for blog in blogs %}
+      <div class="col-md-6 col-lg-4 fade-in">
+        <div class="blog-card">
+          <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+          <div class="blog-content">
+            <h5>{{ blog.title }}</h5>
+            <p class="date">{{ blog.date|date:"F j, Y" }}</p>
+            <p>{{ blog.excerpt|truncatewords:25 }}</p>
+            <a href="{% url 'store:blog_detail' blog.slug %}" class="btn btn-gold mt-2">Read More</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center">
+        <p class="text-muted">No blog posts available.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+
+{% endblock content %}
