@@ -1,14 +1,51 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 <section class="py-5">
   <div class="container">
-    <h2>Our Stores</h2>
-    <p>Visit our exclusive showrooms for a premium shopping experience.</p>
-    <ul>
-      <li><strong>Mumbai:</strong> 123 Sonar Galli, Bandra</li>
-      <li><strong>Delhi:</strong> 123 Sparkle Street GL 456789</li>
-      <li><strong>Bangalore:</strong> 789 Jewel Road, Indiranagar</li>
-    </ul>
-    <p>All stores open from 10:00 AM to 8:00 PM (Mon-Sat)</p>
+    <h2 class="mb-4">Our Stores</h2>
+    <p>Visit our exclusive showrooms for a premium shopping experience across India.</p>
+
+    <div class="row g-4 mt-4">
+      <div class="col-md-4">
+        <div class="border p-3 h-100 rounded shadow-sm">
+          <h5 class="text-primary">Mumbai</h5>
+          <p>123 Sonar Galli, Bandra (W), Mumbai - 400050</p>
+          <p><strong>Contact:</strong> +91 98765 43210</p>
+          <p><strong>Manager:</strong> Ms. Priya Sharma</p>
+          <div>
+            <iframe src="https://maps.google.com/maps?q=Bandra%20Mumbai&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="150" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="border p-3 h-100 rounded shadow-sm">
+          <h5 class="text-primary">Delhi</h5>
+          <p>123 Sparkle Street, Connaught Place, Delhi - 110001</p>
+          <p><strong>Contact:</strong> +91 98765 12345</p>
+          <p><strong>Manager:</strong> Mr. Rahul Verma</p>
+          <div>
+            <iframe src="https://maps.google.com/maps?q=Connaught%20Place%20Delhi&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="150" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="border p-3 h-100 rounded shadow-sm">
+          <h5 class="text-primary">Bangalore</h5>
+          <p>789 Jewel Road, Indiranagar, Bangalore - 560038</p>
+          <p><strong>Contact:</strong> +91 98765 98765</p>
+          <p><strong>Manager:</strong> Ms. Aishwarya Rao</p>
+          <div>
+            <iframe src="https://maps.google.com/maps?q=Indiranagar%20Bangalore&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="150" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <h5 class="text-dark">Store Hours</h5>
+      <p>All stores are open from <strong>10:00 AM to 8:00 PM</strong>, Monday to Saturday.</p>
+      <p class="text-muted"><em>Note: Stores remain closed on national holidays.</em></p>
+    </div>
   </div>
 </section>
 {% endblock %}

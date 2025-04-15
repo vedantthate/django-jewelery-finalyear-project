@@ -1,42 +1,88 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 <section class="py-5">
   <div class="container">
     <h2>Frequently Asked Questions</h2>
     <div class="accordion" id="faqAccordion">
-      <div class="accordion-item">
+
+      <div class="accordion-item mb-3">
         <h2 class="accordion-header" id="q1">
-          <button
-            class="accordion-button"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#a1"
-          >
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
             Do you offer free shipping?
           </button>
         </h2>
         <div id="a1" class="accordion-collapse collapse show">
           <div class="accordion-body">
-            Yes, we provide free shipping on all orders.
+            Yes, we provide free shipping on all orders placed within the continental United States. For international orders, we offer discounted shipping rates depending on the destination. Please note that free shipping only applies to standard delivery and may exclude some remote areas. Expedited shipping options are available at an additional cost, and you will be able to select your preferred shipping method at checkout. We strive to ensure that your order reaches you as quickly as possible, and all orders are processed within 1-2 business days of being placed.
           </div>
         </div>
       </div>
-      <div class="accordion-item">
+
+      <div class="accordion-item mb-3">
         <h2 class="accordion-header" id="q2">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#a2"
-          >
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
             Can I return customized jewelry?
           </button>
         </h2>
         <div id="a2" class="accordion-collapse collapse">
           <div class="accordion-body">
-            Unfortunately, customized items are non-returnable unless defective.
+            Unfortunately, customized jewelry is non-returnable unless the item is defective or damaged. Since each piece is made according to your specific order, it is unique to you. However, if you notice any defects, such as an engraving error, broken piece, or any other issue upon receiving your order, please reach out to us immediately with photos of the item and its issue. We will work with you to resolve the matter by either issuing a refund, sending a replacement, or offering a store credit, depending on the situation. Please ensure that you inspect your customized items upon arrival to avoid any delays in resolving issues.
           </div>
         </div>
       </div>
+
+      <div class="accordion-item mb-3">
+        <h2 class="accordion-header" id="q3">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+            How long does delivery take?
+          </button>
+        </h2>
+        <div id="a3" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Delivery times vary depending on your location, the shipping method selected, and the availability of the items ordered. For domestic orders, standard delivery typically takes between 3-7 business days, depending on the delivery address and shipping carrier. If you need your items sooner, we also offer expedited shipping options at checkout, which can deliver your order within 1-2 business days for an additional fee. International shipping can take longer, typically between 7-14 business days, depending on the destination country and customs processing times. We will provide you with a tracking number once your order ships so you can track your delivery in real-time.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item mb-3">
+        <h2 class="accordion-header" id="q4">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a4">
+            Do you offer gift wrapping?
+          </button>
+        </h2>
+        <div id="a4" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Yes, we do offer gift wrapping for an additional fee. During checkout, you will have the option to select gift wrapping, and we will ensure that your items are beautifully wrapped and ready for gifting. Our gift wrapping includes premium wrapping paper, a ribbon, and a gift tag with a personalized message. If you wish to include a special note, you can add a message at checkout, and we will include it with your wrapped item. Please note that gift wrapping may not be available for all items due to their size or shape, but we will provide a notification during checkout if that is the case.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item mb-3">
+        <h2 class="accordion-header" id="q5">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a5">
+            How can I track my order?
+          </button>
+        </h2>
+        <div id="a5" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Once your order has been processed and shipped, you will receive an email notification containing a tracking link to track your shipment. The tracking link will direct you to the carrier's website, where you can view real-time updates on the status of your order. Please note that it may take up to 24 hours for tracking information to be updated once the package has been shipped. If you haven't received your tracking number, or if you encounter any issues with tracking your order, please feel free to reach out to our customer support team, and we will assist you in resolving the issue.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item mb-3">
+        <h2 class="accordion-header" id="q6">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a6">
+            What if I receive a damaged product?
+          </button>
+        </h2>
+        <div id="a6" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            We understand how disappointing it can be to receive a damaged product, and we are committed to resolving any issues quickly. If you receive a damaged or defective product, please contact our customer service team within 48 hours of receiving your order. We kindly ask that you provide clear photos of the damage, as this will help us assess the situation and expedite the process. Once we verify the issue, we will offer a resolution, which may include a replacement, a full refund, or a store credit. In cases where the item cannot be replaced, we will ensure that your refund is processed promptly. Please keep the damaged item and its packaging, as we may ask you to return it for inspection, depending on the situation.
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
