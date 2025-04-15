@@ -1,4 +1,4 @@
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlsplit, urlunsplit
 
 from django.conf import settings
 
@@ -183,13 +183,13 @@ def redirect_to_login(next, login_url=None, redirect_field_name=REDIRECT_FIELD_N
     """
     resolved_url = resolve_url(login_url or settings.LOGIN_URL)
 
-    login_url_parts = list(urlparse(resolved_url))
+    login_url_parts = list(urlsplit(resolved_url))
     if redirect_field_name:
-        querystring = QueryDict(login_url_parts[4], mutable=True)
+        querystring = QueryDict(login_url_parts[3], mutable=True)
         querystring[redirect_field_name] = next
-        login_url_parts[4] = querystring.urlencode(safe="/")
+        login_url_parts[3] = querystring.urlencode(safe="/")
 
-    return HttpResponseRedirect(urlunparse(login_url_parts))
+    return HttpResponseRedirect(urlunsplit(login_url_parts))
 
 
 # Class-based password reset views
@@ -301,7 +301,8 @@ class PasswordResetConfirmView(PasswordContextMixin, FormView):
         try:
             # urlsafe_base64_decode() decodes to bytestring
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = UserModel._default_manager.get(pk=uid)
+            pk = UserModel._meta.pk.to_python(uid)
+            user = UserModel._default_manager.get(pk=pk)
         except (
             TypeError,
             ValueError,

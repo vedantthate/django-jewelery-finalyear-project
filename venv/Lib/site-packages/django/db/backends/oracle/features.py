@@ -81,6 +81,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     allows_multiple_constraints_on_same_fields = False
     supports_json_field_contains = False
     supports_collation_on_textfield = False
+    supports_tuple_lookups = False
     test_now_utc_template = "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"
     django_test_expected_failures = {
         # A bug in Django/oracledb with respect to string handling (#23843).
@@ -136,6 +137,25 @@ class DatabaseFeatures(BaseDatabaseFeatures):
                     "Raises ORA-00600 on Oracle < 23c: internal error code.": {
                         "model_fields.test_jsonfield.TestQuerying."
                         "test_usage_in_subquery",
+                    },
+                }
+            )
+        if self.connection.is_pool:
+            skips.update(
+                {
+                    "Pooling does not support persistent connections": {
+                        "backends.base.test_base.ConnectionHealthChecksTests."
+                        "test_health_checks_enabled",
+                        "backends.base.test_base.ConnectionHealthChecksTests."
+                        "test_health_checks_enabled_errors_occurred",
+                        "backends.base.test_base.ConnectionHealthChecksTests."
+                        "test_health_checks_disabled",
+                        "backends.base.test_base.ConnectionHealthChecksTests."
+                        "test_set_autocommit_health_checks_enabled",
+                        "servers.tests.LiveServerTestCloseConnectionTest."
+                        "test_closes_connections",
+                        "backends.oracle.tests.TransactionalTests."
+                        "test_password_with_at_sign",
                     },
                 }
             )

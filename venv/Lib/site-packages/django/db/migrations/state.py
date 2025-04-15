@@ -211,6 +211,14 @@ class ProjectState:
         model_state.options[option_name] = [obj for obj in objs if obj.name != obj_name]
         self.reload_model(app_label, model_name, delay=True)
 
+    def _alter_option(self, app_label, model_name, option_name, obj_name, alt_obj):
+        model_state = self.models[app_label, model_name]
+        objs = model_state.options[option_name]
+        model_state.options[option_name] = [
+            obj if obj.name != obj_name else alt_obj for obj in objs
+        ]
+        self.reload_model(app_label, model_name, delay=True)
+
     def add_index(self, app_label, model_name, index):
         self._append_option(app_label, model_name, "indexes", index)
 
@@ -236,6 +244,11 @@ class ProjectState:
 
     def remove_constraint(self, app_label, model_name, constraint_name):
         self._remove_option(app_label, model_name, "constraints", constraint_name)
+
+    def alter_constraint(self, app_label, model_name, constraint_name, constraint):
+        self._alter_option(
+            app_label, model_name, "constraints", constraint_name, constraint
+        )
 
     def add_field(self, app_label, model_name, name, field, preserve_default):
         # If preserve default is off, don't use the default for future state.
@@ -310,6 +323,16 @@ class ProjectState:
                         for from_field_name in from_fields
                     ]
                 )
+            # Fix field names (e.g. for CompositePrimaryKey) to refer to the
+            # new field.
+            if field_names := getattr(field, "field_names", None):
+                if old_name in field_names:
+                    field.field_names = tuple(
+                        [
+                            new_name if field_name == old_name else field_name
+                            for field_name in field.field_names
+                        ]
+                    )
         # Fix index/unique_together to refer to the new field.
         options = model_state.options
         for option in ("index_together", "unique_together"):
@@ -762,8 +785,11 @@ class ModelState:
         return self.name.lower()
 
     def get_field(self, field_name):
-        if field_name == "_order":
-            field_name = self.options.get("order_with_respect_to", field_name)
+        if (
+            field_name == "_order"
+            and self.options.get("order_with_respect_to") is not None
+        ):
+            field_name = self.options["order_with_respect_to"]
         return self.fields[field_name]
 
     @classmethod

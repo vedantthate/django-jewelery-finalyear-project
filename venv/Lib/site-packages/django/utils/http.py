@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from email.utils import formatdate
 from urllib.parse import quote, unquote
 from urllib.parse import urlencode as original_urlencode
-from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 from django.utils.datastructures import MultiValueDict
 from django.utils.regex_helper import _lazy_re_compile
@@ -37,6 +37,7 @@ ASCTIME_DATE = _lazy_re_compile(r"^\w{3} %s %s %s %s$" % (__M, __D2, __T, __Y))
 
 RFC3986_GENDELIMS = ":/?#[]@"
 RFC3986_SUBDELIMS = "!$&'()*+,;="
+MAX_URL_LENGTH = 2048
 
 
 def urlencode(query, doseq=False):
@@ -271,11 +272,14 @@ def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
 
 def _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
     # Chrome considers any URL with more than two slashes to be absolute, but
-    # urlparse is not so flexible. Treat any url with three slashes as unsafe.
-    if url.startswith("///"):
+    # urlsplit is not so flexible. Treat any url with three slashes as unsafe.
+    if url.startswith("///") or len(url) > MAX_URL_LENGTH:
+        # urlsplit does not perform validation of inputs. Unicode normalization
+        # is very slow on Windows and can be a DoS attack vector.
+        # https://docs.python.org/3/library/urllib.parse.html#url-parsing-security
         return False
     try:
-        url_info = urlparse(url)
+        url_info = urlsplit(url)
     except ValueError:  # e.g. invalid IPv6 addresses
         return False
     # Forbid URLs like http:///example.com - with a scheme, but without a hostname.
@@ -362,10 +366,19 @@ def content_disposition_header(as_attachment, filename):
         disposition = "attachment" if as_attachment else "inline"
         try:
             filename.encode("ascii")
+            is_ascii = True
+        except UnicodeEncodeError:
+            is_ascii = False
+        # Quoted strings can contain horizontal tabs, space characters, and
+        # characters from 0x21 to 0x7e, except 0x22 (`"`) and 0x5C (`\`) which
+        # can still be expressed but must be escaped with their own `\`.
+        # https://datatracker.ietf.org/doc/html/rfc9110#name-quoted-strings
+        quotable_characters = r"^[\t \x21-\x7e]*$"
+        if is_ascii and re.match(quotable_characters, filename):
             file_expr = 'filename="{}"'.format(
                 filename.replace("\\", "\\\\").replace('"', r"\"")
             )
-        except UnicodeEncodeError:
+        else:
             file_expr = "filename*=utf-8''{}".format(quote(filename))
         return f"{disposition}; {file_expr}"
     elif as_attachment:

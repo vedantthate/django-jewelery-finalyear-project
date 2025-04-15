@@ -391,8 +391,11 @@ class Field(RegisterLookupMixin):
         from django.db.models.expressions import Value
 
         if (
-            self.db_default is NOT_PROVIDED
-            or isinstance(self.db_default, Value)
+            not self.has_db_default()
+            or (
+                isinstance(self.db_default, Value)
+                or not hasattr(self.db_default, "resolve_expression")
+            )
             or databases is None
         ):
             return []
@@ -653,6 +656,8 @@ class Field(RegisterLookupMixin):
             path = path.replace("django.db.models.fields.json", "django.db.models")
         elif path.startswith("django.db.models.fields.proxy"):
             path = path.replace("django.db.models.fields.proxy", "django.db.models")
+        elif path.startswith("django.db.models.fields.composite"):
+            path = path.replace("django.db.models.fields.composite", "django.db.models")
         elif path.startswith("django.db.models.fields"):
             path = path.replace("django.db.models.fields", "django.db.models")
         # Return basic info - other fields should override this.
@@ -928,8 +933,7 @@ class Field(RegisterLookupMixin):
     def db_returning(self):
         """Private API intended only to be used by Django itself."""
         return (
-            self.db_default is not NOT_PROVIDED
-            and connection.features.can_return_columns_from_insert
+            self.has_db_default() and connection.features.can_return_columns_from_insert
         )
 
     def set_attributes_from_name(self, name):
@@ -1011,6 +1015,10 @@ class Field(RegisterLookupMixin):
         """Return a boolean of whether this field has a default value."""
         return self.default is not NOT_PROVIDED
 
+    def has_db_default(self):
+        """Return a boolean of whether this field has a db_default value."""
+        return self.db_default is not NOT_PROVIDED
+
     def get_default(self):
         """Return the default value for this field."""
         return self._get_default()
@@ -1022,7 +1030,7 @@ class Field(RegisterLookupMixin):
                 return self.default
             return lambda: self.default
 
-        if self.db_default is not NOT_PROVIDED:
+        if self.has_db_default():
             from django.db.models.expressions import DatabaseDefault
 
             return lambda: DatabaseDefault(
@@ -1040,9 +1048,7 @@ class Field(RegisterLookupMixin):
     @cached_property
     def _db_default_expression(self):
         db_default = self.db_default
-        if db_default is not NOT_PROVIDED and not hasattr(
-            db_default, "resolve_expression"
-        ):
+        if self.has_db_default() and not hasattr(db_default, "resolve_expression"):
             from django.db.models.expressions import Value
 
             db_default = Value(db_default, self)
@@ -1823,9 +1829,8 @@ class DecimalField(Field):
             )
         return decimal_value
 
-    def get_db_prep_save(self, value, connection):
-        if hasattr(value, "as_sql"):
-            return value
+    def get_db_prep_value(self, value, connection, prepared=False):
+        value = super().get_db_prep_value(value, connection, prepared)
         return connection.ops.adapt_decimalfield_value(
             self.to_python(value), self.max_digits, self.decimal_places
         )

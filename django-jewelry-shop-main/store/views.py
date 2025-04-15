@@ -506,6 +506,8 @@ def checkout(request):
             # Clear the cart after successful order creation
             cart_products.delete()
         messages.success(request, f"Order placed successfully with {payment_method} method.")
+        send_order(order,None)
+        messages.success(request,"An order confirmation email has been sent to your registered email.")
         return redirect('store:orders')  
 
     return redirect('store:cart')

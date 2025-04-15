@@ -187,7 +187,9 @@ class RelatedField(FieldCacheMixin, Field):
         return errors
 
     def _check_relation_model_exists(self):
-        rel_is_missing = self.remote_field.model not in self.opts.apps.get_models()
+        rel_is_missing = self.remote_field.model not in self.opts.apps.get_models(
+            include_auto_created=True
+        )
         rel_is_string = isinstance(self.remote_field.model, str)
         model_name = (
             self.remote_field.model
@@ -578,6 +580,7 @@ class ForeignObject(RelatedField):
         return [
             *super().check(**kwargs),
             *self._check_to_fields_exist(),
+            *self._check_to_fields_composite_pk(),
             *self._check_unique_target(),
         ]
 
@@ -603,6 +606,36 @@ class ForeignObject(RelatedField):
                     )
         return errors
 
+    def _check_to_fields_composite_pk(self):
+        from django.db.models.fields.composite import CompositePrimaryKey
+
+        # Skip nonexistent models.
+        if isinstance(self.remote_field.model, str):
+            return []
+
+        errors = []
+        for to_field in self.to_fields:
+            try:
+                field = (
+                    self.remote_field.model._meta.pk
+                    if to_field is None
+                    else self.remote_field.model._meta.get_field(to_field)
+                )
+            except exceptions.FieldDoesNotExist:
+                pass
+            else:
+                if isinstance(field, CompositePrimaryKey):
+                    errors.append(
+                        checks.Error(
+                            "Field defines a relation to the CompositePrimaryKey of "
+                            f"model {self.remote_field.model._meta.object_name!r} "
+                            "which is not supported.",
+                            obj=self,
+                            id="fields.E347",
+                        )
+                    )
+        return errors
+
     def _check_unique_target(self):
         rel_is_string = isinstance(self.remote_field.model, str)
         if rel_is_string or not self.requires_unique_target:
@@ -622,11 +655,21 @@ class ForeignObject(RelatedField):
         if not has_unique_constraint:
             foreign_fields = {f.name for f in self.foreign_related_fields}
             remote_opts = self.remote_field.model._meta
-            has_unique_constraint = any(
-                frozenset(ut) <= foreign_fields for ut in remote_opts.unique_together
-            ) or any(
-                frozenset(uc.fields) <= foreign_fields
-                for uc in remote_opts.total_unique_constraints
+            has_unique_constraint = (
+                any(
+                    frozenset(ut) <= foreign_fields
+                    for ut in remote_opts.unique_together
+                )
+                or any(
+                    frozenset(uc.fields) <= foreign_fields
+                    for uc in remote_opts.total_unique_constraints
+                )
+                # If the model defines a composite primary key and the foreign key
+                # refers to it, the target is unique.
+                or (
+                    frozenset(field.name for field in remote_opts.pk_fields)
+                    == foreign_fields
+                )
             )
 
         if not has_unique_constraint:
@@ -779,6 +822,7 @@ class ForeignObject(RelatedField):
             "ForeignObject.get_joining_columns() is deprecated. Use "
             "get_joining_fields() instead.",
             RemovedInDjango60Warning,
+            stacklevel=2,
         )
         source = self.reverse_related_fields if reverse_join else self.related_fields
         return tuple(
@@ -790,6 +834,7 @@ class ForeignObject(RelatedField):
             "ForeignObject.get_reverse_joining_columns() is deprecated. Use "
             "get_reverse_joining_fields() instead.",
             RemovedInDjango60Warning,
+            stacklevel=2,
         )
         return self.get_joining_columns(reverse_join=True)
 
@@ -929,7 +974,9 @@ class ForeignKey(ForeignObject):
 
     empty_strings_allowed = False
     default_error_messages = {
-        "invalid": _("%(model)s instance with %(field)s %(value)r does not exist.")
+        "invalid": _(
+            "%(model)s instance with %(field)s %(value)r is not a valid choice."
+        )
     }
     description = _("Foreign Key (type determined by related field)")
 
@@ -1454,6 +1501,8 @@ class ManyToManyField(RelatedField):
         return warnings
 
     def _check_relationship_model(self, from_model=None, **kwargs):
+        from django.db.models.fields.composite import CompositePrimaryKey
+
         if hasattr(self.remote_field.through, "_meta"):
             qualified_model_name = "%s.%s" % (
                 self.remote_field.through._meta.app_label,
@@ -1490,6 +1539,20 @@ class ManyToManyField(RelatedField):
                 to_model_name = to_model
             else:
                 to_model_name = to_model._meta.object_name
+            if (
+                self.remote_field.through_fields is None
+                and not isinstance(to_model, str)
+                and isinstance(to_model._meta.pk, CompositePrimaryKey)
+            ):
+                errors.append(
+                    checks.Error(
+                        "Field defines a relation to the CompositePrimaryKey of model "
+                        f"{self.remote_field.model._meta.object_name!r} which is not "
+                        "supported.",
+                        obj=self,
+                        id="fields.E347",
+                    )
+                )
             relationship_model_name = self.remote_field.through._meta.object_name
             self_referential = from_model == to_model
             # Count foreign keys in intermediate model
@@ -1756,6 +1819,8 @@ class ManyToManyField(RelatedField):
                 kwargs["through"] = self.remote_field.through
             elif not self.remote_field.through._meta.auto_created:
                 kwargs["through"] = self.remote_field.through._meta.label
+        if through_fields := getattr(self.remote_field, "through_fields", None):
+            kwargs["through_fields"] = through_fields
         # If swappable is True, then see if we're actually pointing to the target
         # of a swap.
         swappable_setting = self.swappable_setting
@@ -1963,7 +2028,7 @@ class ManyToManyField(RelatedField):
         pass
 
     def value_from_object(self, obj):
-        return [] if obj.pk is None else list(getattr(obj, self.attname).all())
+        return list(getattr(obj, self.attname).all()) if obj._is_pk_set() else []
 
     def save_form_data(self, instance, data):
         getattr(instance, self.attname).set(data)
