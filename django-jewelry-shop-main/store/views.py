@@ -148,15 +148,14 @@ def otp_verification(request):
             messages.error(request, "Session expired. Please request a new OTP.")
             return redirect('store:register')
 
-        # Check if OTP is still valid
         valid_until = timezone.make_aware(datetime.fromisoformat(otp_valid_date))
         if timezone.now() > valid_until:
             messages.error(request, "OTP has expired. Please request a new one.")
             return redirect('store:register')
 
-        # Verify OTP
         totp = pyotp.TOTP(otp_secret_key, interval=120)
-        if totp.verify(user_otp):
+
+        if totp.verify(user_otp,valid_window=1):
             user = get_object_or_404(User, email=email)
             user.is_active = True
             user.save()
@@ -167,8 +166,11 @@ def otp_verification(request):
             return redirect('store:login')
         else:
             messages.error(request, "Invalid OTP. Please try again.")
+            # Don't flush session, just render form again
+            return render(request, 'account/otp_verification.html')
 
     return render(request, 'account/otp_verification.html')
+
 
 
 def resend_otp(request):
@@ -565,11 +567,12 @@ def track_order(request):
         tracking_uid = request.POST.get('tracking_id')
         try:
             order = Order.objects.get(tracking_uid=tracking_uid)
+            searched = True
             if order.status in tracking_steps:
                 current_index = tracking_steps.index(order.status)
         except Order.DoesNotExist:
+            searched = True
             order = None
-        searched = True
 
     return render(request, 'store/track_order.html', {
         'order': order,
@@ -602,20 +605,25 @@ def contact(request):
         
         subject = f'New Inquiry from {name} via Golden Glamour Contact Page'
         message = (
-            f"Dear Admin,\n\n"
-            f"You have received a new message from the contact form on your website.\n\n"
-            f"Sender Name: {name}\n"
-            f"Sender Email: {email}\n\n"
-            f"Message:\n{message}\n\n"
-            f"Best Regards,\n"
-            f"Golden Glamour Website"
-        )
+                f"Hello Admin,\n\n"
+                f"You have received a new inquiry through the Golden Glamour contact form.\n\n"
+                f"--- Contact Details ---\n"
+                f"Name      : {name}\n"
+                f"Email     : {email}\n\n"
+                f"--- Message ---\n"
+                f"{message}\n\n"
+                f"Please respond to the sender at your earliest convenience.\n\n"
+                f"Kind regards,\n"
+                f"Golden Glamour Website\n"
+                f"https://www.goldenglamour.com"
+            )
+
         # Example email logic
         send_mail(
             subject,
             message,
-            settings.EMAIL_HOST_USER,
-            [email],
+            settings.EMAIL_HOST_USER,          
+            [settings.EMAIL_HOST_USER],
             fail_silently=False,
         )
         messages.success(request, "Thank you for contacting us. Your message has been successfully sent. We’ll get back to you shortly.")

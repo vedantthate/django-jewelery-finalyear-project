@@ -1,3 +1,4 @@
+import re
 from django.contrib.auth import password_validation
 from store.models import Address
 from django import forms
@@ -22,6 +23,26 @@ class RegistrationForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2']
         labels = {'email': 'Email'}
         widgets = {'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Username'})}
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if not re.match(r'^[A-Z][a-zA-Z]*$', username):
+            raise forms.ValidationError(
+                "Username must start with an uppercase letter and contain only alphabets."
+            )
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already exists.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        
+        if not re.match(r'^[a-zA-Z][\w\.-]*@[a-zA-Z]+\.[a-zA-Z]{2,}$', email):
+            raise forms.ValidationError("Enter a valid email address that does not start with a digit.")
+    
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email is already registered.")
+        return email
 
 
 class LoginForm(AuthenticationForm):

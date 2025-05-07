@@ -10,11 +10,13 @@ def send_otp(request):
     otp_secret_key = pyotp.random_base32()
     totp = pyotp.TOTP(otp_secret_key, interval=120)
     otp = totp.now()
-    otp_valid_date = (datetime.now() + timedelta(minutes=2)).isoformat()  
+    
+    otp_valid_date = (datetime.now() + timedelta(minutes=2)).isoformat()
     request.session['otp_secret_key'] = otp_secret_key
     request.session['otp_valid_date'] = otp_valid_date
 
     return otp
+
 
 
 
