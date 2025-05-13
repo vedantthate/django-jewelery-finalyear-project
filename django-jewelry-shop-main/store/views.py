@@ -677,6 +677,46 @@ def test(request):
 
 
 
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
+from .models import Order
+
+def invoice_view(request, order_id):
+    # Fetch the order object
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    items = order.items.all()
+
+    # Calculate subtotal and total
+    subtotal = sum(item.price * item.quantity for item in items)
+    shipping_charge = order.shipping_charge
+    total_amount = order.amount + order.shipping_charge
+
+    # Render HTML content using the template
+    html_string = render_to_string('store/invoice_template.html', {
+        'order': order,
+        'items': items,
+        'subtotal': subtotal,
+        'shipping_charge': shipping_charge,
+        'total_amount': total_amount,
+    })
+
+    # Create the response object with the appropriate content type for PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=invoice_{order.id}.pdf'
+
+    # Generate PDF using xhtml2pdf
+    pisa_status = pisa.CreatePDF(html_string, dest=response)
+
+    # If the PDF creation failed, show an error message
+    if pisa_status.err:
+        return HttpResponse('We encountered an error generating the PDF.')
+
+    return response
+
+
+
 # footer
 def services(request):
     return render(request,'footer/returns_refunds.html')

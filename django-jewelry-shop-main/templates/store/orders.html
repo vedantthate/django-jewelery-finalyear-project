@@ -63,7 +63,10 @@
       </div>
 
       <div class="card-footer text-end bg-light">
-        <a href="#" class="btn btn-sm btn-outline-primary">Download Invoice</a>
+        <a href="{% url 'store:invoice' order.id %}" class="btn btn-sm btn-outline-primary" target="_blank">
+          Download Invoice
+      </a>
+      
         {% if order.status != 'Cancelled' and order.status != 'Pending' %}
         <a href="{% url 'store:track_order_direct' order.tracking_uid %}" class="btn btn-sm btn-primary">Track Order</a>
         {% endif %}

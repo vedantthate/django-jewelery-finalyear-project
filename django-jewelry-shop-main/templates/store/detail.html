@@ -108,7 +108,7 @@
             </form>
           </div>
         </div>
-        <a class="btn btn-link text-dark p-0 mb-4" href="#"
+        <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'store:add-to-wishlist' product.id %}"
           ><i class="far fa-heart mr-2"></i>Add to wish list</a
         ><br />
         <ul class="list-unstyled small d-inline-block">
@@ -364,9 +364,9 @@
             <div class="product-overlay">
               <ul class="mb-0 list-inline">
                 <li class="list-inline-item m-0 p-0">
-                  <a class="btn btn-sm btn-outline-dark" href="#"
-                    ><i class="far fa-heart"></i
-                  ></a>
+                  <a class="btn btn-sm btn-outline-dark" href="{% url 'store:add-to-wishlist' product.id %}">
+                    <i class="far fa-heart"></i>
+                  </a>
                 </li>
                 <li class="list-inline-item m-0 p-0">
                   <a
@@ -393,4 +393,6 @@
     </div>
   </div>
 </section>
+
+
 {% endblock content %}

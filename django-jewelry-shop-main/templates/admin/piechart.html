@@ -7,6 +7,9 @@
     // Calculate total for percentage calculation
     const totalOrders = Object.values(statusData).reduce((a, b) => a + b, 0);
 
+    // Update total orders count on the page
+    document.getElementById('totalOrdersCount').textContent = totalOrders;
+
     // Pie Chart Configuration
     const pieData = {
         labels: Object.keys(statusData),

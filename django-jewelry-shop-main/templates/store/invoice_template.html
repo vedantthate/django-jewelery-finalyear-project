@@ -1,0 +1,172 @@
+<!-- templates/store/invoice_template.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ order.id }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 26px;
+        }
+
+        h3, h4 {
+            color: #555;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        p {
+            color: #555;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+
+        .details {
+            margin-bottom: 4px;
+            padding-bottom: 0;
+        }
+
+        .details + .details {
+            margin-top: 4px;
+        }
+
+        .details p {
+            margin: 0;
+            line-height: 1.3;
+            font-size: 14px;
+        }
+
+        .order-items, .payment-details {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+
+        th, td {
+            padding: 4px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .total {
+            font-weight: bold;
+            background-color: #f9f9f9;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 15px;
+        }
+
+        .footer a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Invoice #{{ order.id }}</h2>
+
+        <div class="details">
+            <h3>Order Details</h3>
+            <p>
+                <strong>Tracking ID:</strong> {{ order.tracking_uid }}<br>
+                <strong>Status:</strong> {{ order.status }}<br>
+                <strong>Ordered Date:</strong> {{ order.ordered_date }}<br>
+                <strong>Estimated Delivery:</strong> {{ order.estimated_delivery }}
+            </p>
+        </div>
+
+        <div class="details">
+            <h3>Customer Details</h3>
+            <p>
+                {{ order.user.get_full_name }}<br>
+                {{ order.address.address }}<br>
+                {{ order.address.city }}, {{ order.address.state }} - {{ order.address.pincode }}<br>
+                Phone: {{ order.address.user_phone_number }}<br>
+                Email: {{ order.user.email }}
+            </p>
+        </div>
+
+        <div class="order-items">
+            <h3>Order Items</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Line Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.product.title }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₹{{ item.price }}</td>
+                        <td>₹{{ total_amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="total">
+                        <td colspan="3">Subtotal</td>
+                        <td>₹{{ subtotal }}</td>
+                    </tr>
+                    <tr class="total">
+                        <td colspan="3">Shipping</td>
+                        <td>₹{{ shipping_charge }}</td>
+                    </tr>
+                    <tr class="total">
+                        <td colspan="3">Total</td>
+                        <td>₹{{ total_amount }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="payment-details">
+            <h4>Payment Method: {{ order.payment_method }}</h4>
+            <p>Payment Status: {{ order.payment_status }}</p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your purchase! For any questions, contact us at <a href="mailto:info@example.com">info@example.com</a>.</p>
+            <p>&copy; 2025 Jewelry Shop. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
