@@ -18,7 +18,7 @@
         <!-- Contact Form -->
         <div class="col-md-6">
           <div class="contact-card">
-            <form method="post">
+            <form method="post" action="{% url 'store:contact' %}">
               {% csrf_token %}
               <div class="mb-3">
                 <label class="form-label">Your Name</label>
@@ -41,11 +41,11 @@
         <div class="col-md-6">
           <div class="contact-card">
             <h5 class="mb-3">Visit Our Store</h5>
-            <p><strong>Golden Glamour</strong><br>
+            <p style="color:black;"><strong>Golden Glamour</strong><br>
               123 Sparkle Street,<br>
               Jewel City, GL 456789, Delhi<br>
               Phone: +91 8956231245<br>
-              Email: contact@goldenglamour.com
+              <a href="mailto:glamourgolden19@gmail.com" style="color:black;">Email: glamourgolden19@gmail.com</a>
             </p>
             <hr>
             <h5 class="mb-3">Follow Us</h5>
