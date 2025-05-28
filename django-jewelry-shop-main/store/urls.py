@@ -37,6 +37,7 @@ urlpatterns = [
     path('faqs/',views.faqs,name='faqs'),
     
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('chatbot_api/', views.chatbot_api, name='chatbot_api'),
      
 
     #URL for Products

@@ -3,7 +3,7 @@
 <!-- Navbar -->
 <header class="header bg-white">
   <div class="container px-0 px-lg-3">
-    <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+    <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0 fixed-top">
 
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -35,6 +35,7 @@
             <a class="nav-link" href="{% url 'store:contact' %}">Contact</a>
           </li>
         </ul>
+
         <div class="d-flex align-items-center">
           <form method="GET" action="{% url 'store:search' %}" class="form-inline d-none d-lg-block">
             <div class="input-group">
@@ -91,5 +92,15 @@
 <script>
   $(document).ready(function () {
     $('.dropdown-toggle').dropdown();
+  });
+</script>
+<script>
+  window.addEventListener('scroll', function () {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 20) {
+      navbar.classList.add('shadow-sm');
+    } else {
+      navbar.classList.remove('shadow-sm');
+    }
   });
 </script>

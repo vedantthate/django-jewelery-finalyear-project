@@ -1,0 +1,95 @@
+{% load static %}
+
+<!-- CHATBOT -->
+<div id="chatbot-toggle" 
+style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; align-items: center; gap: 10px;">
+
+<span style="font-weight: 600; font-size: 16px; color: #343a40;">Ask Me</span>
+
+<button class="btn btn-dark rounded-circle" 
+     onclick="toggleChatbot()" 
+     title="Chat with us" 
+     style="width: 50px; height: 50px; padding: 0; font-size: 24px; line-height: 50px;">
+💬
+</button>
+
+</div>
+
+<div id="chatbot-window" style="display:none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: white; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1001;">
+<div style="background: #343a40; color: white; padding: 10px;">
+ <strong>Ask Anything</strong>
+ <button class="close text-white float-right" onclick="toggleChatbot()">×</button>
+</div>
+<div id="chat-messages" style="padding: 10px; height: 300px; overflow-y: auto;"></div>
+<div style="padding: 10px; border-top: 1px solid #ddd;">
+ <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendMessage();">
+</div>
+</div>
+
+</div>
+
+<!-- Chatbot JavaScript -->
+<script>
+function toggleChatbot() {
+const chatbot = document.getElementById('chatbot-window');
+chatbot.style.display = chatbot.style.display === 'none' ? 'block' : 'none';
+}
+
+async function sendMessage() {
+const input = document.getElementById('chat-input');
+const msg = input.value.trim();
+if (!msg) return;
+
+const chatBox = document.getElementById('chat-messages');
+// Show user message immediately
+const userMsg = `<div class="mb-2"><strong>You:</strong> ${msg}</div>`;
+chatBox.innerHTML += userMsg;
+input.value = '';
+chatBox.scrollTop = chatBox.scrollHeight;
+
+try {
+ // Send message to backend API
+ const response = await fetch('/chatbot_api/', {  // Adjust the URL if needed
+   method: 'POST',
+   headers: {
+     'Content-Type': 'application/json',
+     'X-CSRFToken': getCookie('csrftoken'),  // Make sure CSRF token is sent if CSRF is enabled
+   },
+   body: JSON.stringify({ message: msg })
+ });
+
+ const data = await response.json();
+
+ if (response.ok) {
+   const botMsg = `<div class="mb-2"><strong>Bot:</strong> ${data.reply}</div>`;
+   chatBox.innerHTML += botMsg;
+ } else {
+   const errMsg = `<div class="mb-2 text-danger"><strong>Bot:</strong> Error: ${data.error || 'Something went wrong'}</div>`;
+   chatBox.innerHTML += errMsg;
+ }
+ chatBox.scrollTop = chatBox.scrollHeight;
+
+} catch (error) {
+ const errMsg = `<div class="mb-2 text-danger"><strong>Bot:</strong> Network error, please try again.</div>`;
+ chatBox.innerHTML += errMsg;
+ chatBox.scrollTop = chatBox.scrollHeight;
+}
+}
+
+// Helper function to get CSRF token from cookies (if CSRF is enabled in Django)
+function getCookie(name) {
+let cookieValue = null;
+if (document.cookie && document.cookie !== '') {
+ const cookies = document.cookie.split(';');
+ for (let i = 0; i < cookies.length; i++) {
+   const cookie = cookies[i].trim();
+   // Does this cookie string begin with the name we want?
+   if (cookie.substring(0, name.length + 1) === (name + '=')) {
+     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+     break;
+   }
+ }
+}
+return cookieValue;
+}
+</script>

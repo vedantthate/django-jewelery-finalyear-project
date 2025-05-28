@@ -1,101 +1,98 @@
 {% extends 'base.html' %}
 {% load static %}
 
-  {% block content %}
+{% block content %}
 
-  <!-- HERO SECTION-->
-  <div class="container">
-    {% comment %} <section class="hero pb-3 bg-cover bg-center d-flex align-items-center" style="background: url({% static 'img/hero-jewlrey-banner.jpg' %})">
-      <div class="container py-5">
-        <div class="row px-4 px-lg-5">
-          <div class="col-lg-6">
-            <p class="text-muted small text-uppercase mb-2">New Inspiration 2025</p>
-            <h1 class="h2 text-uppercase mb-3">20% off on new season</h1><a class="btn btn-dark" href="{% url 'store:all-categories' %}">Browse collections</a>
-          </div>
-        </div>
-      </div>
-    </section>  {% endcomment %}
+<div class="container-fluid px-0">
 
-    {% include 'slide_show.html' %}
+  {% include 'slide_show.html' %}
 
-    <!-- CATEGORIES SECTION-->
-    <section class="pt-5">
-      <header class="text-center">
-        <p class="small text-muted small text-uppercase mb-1">Carefully created collections</p>
-        <h2 class="h5 text-uppercase mb-4">Browse our categories</h2>
+  <!-- CATEGORIES SECTION -->
+  <section class="pt-5">
+    <div class="container">
+      <header class="text-center mb-5">
+        <p class="text-uppercase text-muted small">Carefully Curated Collections</p>
+        <h2 class="fw-bold text-uppercase">Browse Our Categories</h2>
       </header>
       <div class="row">
-      {% if categories %}
-        {% for category in categories %}
-
-          <div class="col-md-4 mb-4 mb-md-0">
-            <a class="category-item" href="{% url 'store:category-products' category.slug %}">
-              {% if category.category_image %}
-                <img class="img-fluid" src="{{ category.category_image.url }}" alt="{{ category.title }}">
+        {% if categories %}
+          {% for category in categories %}
+            <div class="col-md-4 mb-4 mb-md-0">
+              <a class="category-item" href="{% url 'store:category-products' category.slug %}">
+                {% if category.category_image %}
+                  <img class="img-fluid" src="{{ category.category_image.url }}" alt="{{ category.title }}">
                 {% else %}
-                <img class="img-fluid" src="{% static 'img/cat-img-1.jpg' %}" alt="{{ category.title }}">
-              {% endif %}
-              <strong class="category-item-title">{{ category.title }}</strong>
-            </a>
-          </div>
-        
-        {% endfor %}
-      {% endif %}
+                  <img class="img-fluid" src="{% static 'img/cat-img-1.jpg' %}" alt="{{ category.title }}">
+                {% endif %}
+                <strong class="category-item-title">{{ category.title }}</strong>
+              </a>
+            </div>
+          {% endfor %}
+        {% endif %}
       </div>
-    </section>
-    
-    <!-- TRENDING PRODUCTS-->
-    <section class="py-5">
-      <header>
-        <p class="small text-muted small text-uppercase mb-1">Made the hard way</p>
-        <h2 class="h5 text-uppercase mb-4">Top trending products</h2>
+    </div>
+  </section>
+
+
+
+
+ <!-- TRENDING PRODUCTS -->
+  <section class="py-5">
+    <div class="container">
+      <header class="text-center mb-5">
+        <p class="text-uppercase text-muted small">Crafted With Care</p>
+        <h2 class="fw-bold text-uppercase">Top Trending Products</h2>
       </header>
-      <div class="row">
+      <div class="row g-4">
         {% if products %}
           {% for product in products %}
-            <!-- PRODUCT-->
-            <div class="col-xl-3 col-lg-4 col-sm-6 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:"1" }}00">
-              <div class="product text-center">
-                <div class="position-relative mb-3">
-                  <div class="badge text-white badge-"></div>
-                  <a class="d-block" href="{% url 'store:product-detail' product.slug %}">
+            <div class="col-xl-3 col-lg-4 col-sm-6 mb-3">
+              <div 
+                class="card h-100 border-0 shadow product-card p-2 rounded" 
+                style="cursor: pointer;"
+                onclick="window.location.href='{% url 'store:product-detail' product.slug %}'"
+              >
+                <div class="position-relative">
+                  <a href="{% url 'store:product-detail' product.slug %}">
                     {% if product.product_image %}
-                      <img class="img-fluid w-100" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+                      <img src="{{ product.product_image.url }}" alt="{{ product.title }}" class="card-img-top rounded" style="height: 250px; object-fit: cover;">
                     {% else %}
-                      <img class="img-fluid w-100" src="{% static 'img/product-1.jpg' %}" alt="{{ product.title }}">
+                      <img src="{% static 'img/product-1.jpg' %}" alt="{{ product.title }}" class="card-img-top rounded" style="height: 250px; object-fit: cover;">
                     {% endif %}
                   </a>
                   <div class="product-overlay">
-                    <ul class="mb-0 list-inline">
-                      <li class="list-inline-item m-0 p-0">
-                        <a class="btn btn-sm btn-outline-dark" href="{% url 'store:add-to-wishlist' product.id %}">
-                          <i class="far fa-heart"></i>
-                        </a>
-                      </li>
-                      <li class="list-inline-item m-0 p-0">
-                        <form action="{% url 'store:add-to-cart' %}">
-                          <input type="hidden" name="prod_id" value="{{ product.id }}">
-                          <button type="submit" class="btn btn-sm btn-dark">Add to Cart</button>
-                        </form>
-                      </li>
-                    </ul>
+                    <a href="{% url 'store:add-to-wishlist' product.id %}" class="btn btn-outline-danger btn-sm" title="Add to Wishlist" onclick="event.stopPropagation();">
+                      <i class="far fa-heart"></i>
+                    </a>
+                    <form action="{% url 'store:add-to-cart' %}" method="get" class="m-0 d-inline" onclick="event.stopPropagation();">
+                      <input type="hidden" name="prod_id" value="{{ product.id }}">
+                      <button type="submit" class="btn btn-dark btn-sm">Add to Cart</button>
+                    </form>
                   </div>
                 </div>
-                <h6><a class="reset-anchor" href="{% url 'store:product-detail' product.slug %}">{{ product.title }}</a></h6>
-                <p class="small text-muted">₹{{ product.price }}</p>
+                <div class="card-body text-center pt-2">
+                  <h6 class="card-title mb-1">
+                    <a href="{% url 'store:product-detail' product.slug %}" class="text-decoration-none text-dark" onclick="event.stopPropagation();">{{ product.title }}</a>
+                  </h6>
+                  <p class="text-muted mb-0 fw-semibold">₹{{ product.price }}</p>
+                </div>
               </div>
             </div>
           {% endfor %}
         {% endif %}
       </div>
-    </section>
+    </div>
+  </section>
 
 
-    <!-- MODELS SHOWCASING JEWELRY -->
-    <section>
-      <header>
-        <p class="small text-muted text-uppercase mb-1">Elegance in every piece</p>
-        <h2 class="h5 text-uppercase mb-4">Our Models Showcasing Jewelry</h2>
+
+
+  <!-- MODELS SHOWCASING JEWELRY -->
+  <section class="">
+    <div class="container">
+      <header class="text-center mb-5">
+        <p class="text-uppercase text-muted small">Elegance in Every Piece</p>
+        <h2 class="fw-bold text-uppercase">Models Showcasing Our Jewelry</h2>
       </header>
       <div class="row">
         <div class="col-md-4">
@@ -117,79 +114,173 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
 
-    <!-- SERVICES-->
-    <section class="py-5 bg-light">
-      <div class="container">
-        <div class="row text-center">
-          <div class="col-lg-4 mb-3 mb-lg-0">
-            <div class="d-inline-block">
-              <div class="media align-items-end">
-                <svg class="svg-icon svg-icon-big svg-icon-light">
-                  <use xlink:href="#delivery-time-1"> </use>
-                </svg>
-                <div class="media-body text-left ml-3">
-                  <h6 class="text-uppercase mb-1 ml-1">Free shipping</h6>
-                  <p class="text-small mb-0 text-muted">Shipping charges applied</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 mb-3 mb-lg-0">
-            <div class="d-inline-block">
-              <div class="media align-items-end">
-                <svg class="svg-icon svg-icon-big svg-icon-light">
-                  <use xlink:href="#helpline-24h-1"> </use>
-                </svg>
-                <div class="media-body text-left ml-3">
-                  <h6 class="text-uppercase mb-1">24 x 7 service</h6>
-                  <p class="text-small mb-0 ml-2 text-muted">Shipping worlwide</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="d-inline-block">
-              <div class="media align-items-end">
-                <svg class="svg-icon svg-icon-big svg-icon-light">
-                  <use xlink:href="#label-tag-1"> </use>
-                </svg>
-                <div class="media-body text-left ml-3">
-                  <h6 class="text-uppercase mb-1">Festival offer</h6>
-                  <p class="text-small mb-0 ml-1 text-muted">Free shipping worlwide</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
+
+  <!-- TESTIMONIALS -->
+<section class="py-5">
+  <div class="container">
+    <header class="text-center mb-5">
+      <p class="text-uppercase text-muted small">Customer Love</p>
+      <h2 class="fw-bold text-uppercase">What Our Customers Say</h2>
+    </header>
+    <hr>
+    <div class="row text-center">
+      <div class="col-md-4">
+        <blockquote class="blockquote">
+          <p>"Absolutely stunning jewelry and fast delivery!"</p>
+          <footer class="blockquote-footer">Priya M.</footer>
+        </blockquote>
       </div>
-    </section>
-
-    {% include 'partials/_messages.html' %}
-    <!-- NEWSLETTER-->
-    <section class="py-5">
-      <div class="container p-0">
-        <div class="row">
-          <div class="col-lg-6 mb-3 mb-lg-0">
-            <h5 class="text-uppercase">Let's be friends!</h5>
-            <p class="text-small text-muted mb-0">Are you a diamond? Because you’re precious and rare.</p>
-          </div>
-          <div class="col-lg-6">
-            <form action="{% url 'store:home' %}" method="post">
-              {% csrf_token %}
-              <div class="input-group flex-column flex-sm-row mb-3">
-                <input class="form-control form-control-lg py-3" type="email" name="email" placeholder="Enter your email address" aria-describedby="button-addon2" required>
-                <div class="input-group-append">
-                  <button class="btn btn-dark btn-block" id="button-addon2" type="submit">Subscribe</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
+      <div class="col-md-4">
+        <blockquote class="blockquote">
+          <p>"Quality is top-notch. Will definitely buy again."</p>
+          <footer class="blockquote-footer">Amit K.</footer>
+        </blockquote>
       </div>
-    </section>
+      <div class="col-md-4">
+        <blockquote class="blockquote">
+          <p>"Gorgeous packaging and amazing customer support."</p>
+          <footer class="blockquote-footer">Sneha R.</footer>
+        </blockquote>
+      </div>
+    </div>
+    <hr> 
   </div>
+</section>
 
-  {% endblock content %}
+
+
+
+  <!-- BRAND LOGOS -->
+  <section class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-around align-items-center flex-wrap">
+        <img src="https://1000logos.net/wp-content/uploads/2021/02/Flipkart-logo.png" height="50" class="mx-2" alt="Flipkart" />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" height="50" class="mx-2" alt="Amazon" />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" height="50" class="mx-2" alt="Google" />
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <!-- INSTAGRAM REELS GALLERY -->
+  <section class="py-5">
+    <div class="container">
+      <header class="text-center mb-4">
+        <h2 class="fw-bold text-uppercase">Follow Us on Instagram</h2>
+        <p class="text-muted small text-decoration-underline">@goldenglamour</p>
+      </header>
+      <div class="row g-2 justify-content-center">
+        
+        <div class="col-12 col-md-4 col-lg-2">
+          <iframe src="https://www.instagram.com/reel/DDGGEvnI5Nz/embed" 
+                  width="100%" height="300" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>
+        
+        <div class="col-12 col-md-4 col-lg-2">
+          <iframe src="https://www.instagram.com/reel/DAlLK37oxZL/embed" 
+                  width="100%" height="300" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+          <iframe src="https://www.instagram.com/reel/DAlLK37oxZL/embed" 
+                  width="100%" height="300" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+          <iframe src="https://www.instagram.com/reel/DAlLK37oxZL/embed" 
+                  width="100%" height="300" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+          <iframe src="https://www.instagram.com/reel/DAlLK37oxZL/embed" 
+                  width="100%" height="300" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+          <iframe src="https://www.instagram.com/reel/DAlLK37oxZL/embed" 
+                  width="100%" height="300" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>  
+      </div>
+    </div>
+  </section>
+
+
+
+
+  {% include 'partials/_messages.html' %}
+
+  <!-- NEWSLETTER -->
+  <section class="py-4 bg-white">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h5 class="text-uppercase">Stay Connected!</h5>
+          <p class="text-muted">Get updates and exclusive offers straight to your inbox.</p>
+        </div>
+        <div class="col-md-6">
+          <form action="{% url 'store:home' %}" method="post">
+            {% csrf_token %}
+            <div class="input-group">
+              <input class="form-control form-control-lg" type="email" name="email" placeholder="Enter your email address" required>
+              <button class="btn btn-dark btn-lg" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+  <!-- SERVICES -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <i class="fas fa-shipping-fast fa-2x mb-2"></i>
+          <h6 class="text-uppercase fw-bold">Free Shipping</h6>
+          <p class="small">On all orders above ₹499</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-headset fa-2x mb-2"></i>
+          <h6 class="text-uppercase fw-bold">24/7 Support</h6>
+          <p class="small">We’re here for you</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-tags fa-2x mb-2"></i>
+          <h6 class="text-uppercase fw-bold">Festival Offers</h6>
+          <p class="small">Exciting deals on every festival</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+
+<!-- Custom CSS -->
+<style>
+  .product-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s ease-in-out;
+  }
+  .product-card:hover .product-overlay {
+    opacity: 1;
+  }
+</style>
+
+{% endblock content %}
