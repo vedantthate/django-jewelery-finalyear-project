@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
 
-OPENROUTER_API_KEY = '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'  # store this in your settings.py
+OPENROUTER_API_KEY = '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'  # store this in your settings.py
 
 @csrf_exempt
 def chatbot_apii(request):

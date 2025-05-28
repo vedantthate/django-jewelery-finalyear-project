@@ -7,33 +7,44 @@
         <!-- PRODUCT SLIDER-->
         <div class="row m-sm-0">
           <div class="col-sm-12 order-1 order-sm-2">
-            <div class="owl-carousel product-slider" data-slider-id="1">
-              {% if product.product_image %}
-              <a
-                class="d-block"
-                href="{{product.product_image.url}}"
-                data-lightbox="product"
-                title="{{product.title}}"
-                ><img
-                  class="img-fluid"
-                  src="{{product.product_image.url}}"
-                  alt="{{product.title}}"
-              /></a>
-              {% else %}
-              <a
-                class="d-block"
-                href="{% static 'img/product-detail-1.jpg' %}"
-                data-lightbox="product"
-                title="{{product.title}}"
-                ><img
-                  class="img-fluid"
-                  src="{% static 'img/product-detail-1.jpg' %}"
-                  alt="{{product.title}}"
-              /></a>
-              {% endif %}
+            <div class="zoom-container" onmousemove="zoom(event)" onmouseleave="hideZoom()">
+              <div class="owl-carousel product-slider" data-slider-id="1">
+                {% if product.product_image %}
+                <a
+                  class="d-block"
+                  href="{{product.product_image.url}}"
+                  data-lightbox="product"
+                  title="{{product.title}}"
+                >
+                  <img
+                    id="main-image"
+                    class="img-fluid"
+                    src="{{product.product_image.url}}"
+                    alt="{{product.title}}"
+                  />
+                </a>
+                {% else %}
+                <a
+                  class="d-block"
+                  href="{% static 'img/product-detail-1.jpg' %}"
+                  data-lightbox="product"
+                  title="{{product.title}}"
+                >
+                  <img
+                    id="main-image"
+                    class="img-fluid"
+                    src="{% static 'img/product-detail-1.jpg' %}"
+                    alt="{{product.title}}"
+                  />
+                </a>
+                {% endif %}
+                <div id="zoom-view"></div>
+              </div>
             </div>
           </div>
         </div>
+        
+        <div id="zoom-result" class="zoom-result-fixed"></div> 
       </div>
       <!-- PRODUCT DETAILS-->
       <div class="col-lg-6">
@@ -337,62 +348,129 @@
     </div>
 
     <!-- RELATED PRODUCTS-->
-    <h2 class="h5 text-uppercase mb-4">Related products</h2>
-    <div class="row">
-      {% if related_products %} {% for rp in related_products %}
-
-      <!-- PRODUCT-->
-      <div class="col-lg-3 col-sm-6">
-        <div class="product text-center skel-loader">
-          <div class="d-block mb-3 position-relative">
-            <a class="d-block" href="{% url 'store:product-detail' rp.slug %}">
-              {% if rp.product_image %}
-              <img
-                class="img-fluid w-100"
-                src="{{rp.product_image.url}}"
-                alt="{{rp.title}}"
-              />
-              {% else %}
-              <img
-                class="img-fluid w-100"
-                src="{% static 'img/product-1.jpg' %}"
-                alt="{{rp.title}}"
-              />
-              {% endif %}
-            </a>
-
-            <div class="product-overlay">
-              <ul class="mb-0 list-inline">
-                <li class="list-inline-item m-0 p-0">
-                  <a class="btn btn-sm btn-outline-dark" href="{% url 'store:add-to-wishlist' product.id %}">
+    <h2 class="h5 text-uppercase mb-4">Related Products</h2>
+    <div class="row g-4">
+      {% if related_products %}
+        {% for rp in related_products %}
+          <div class="col-xl-3 col-lg-4 col-sm-6 mb-3">
+            <div 
+              class="card h-100 border-0 shadow product-card p-2 rounded"
+              style="cursor: pointer;"
+              onclick="window.location.href='{% url 'store:product-detail' rp.slug %}'"
+            >
+              <div class="position-relative">
+                <a href="{% url 'store:product-detail' rp.slug %}">
+                  {% if rp.product_image %}
+                    <img src="{{ rp.product_image.url }}" alt="{{ rp.title }}" class="card-img-top rounded" style="height: 250px; object-fit: cover;">
+                  {% else %}
+                    <img src="{% static 'img/product-1.jpg' %}" alt="{{ rp.title }}" class="card-img-top rounded" style="height: 250px; object-fit: cover;">
+                  {% endif %}
+                </a>
+                <div class="product-overlay position-absolute top-0 end-0 p-2">
+                  <a href="{% url 'store:add-to-wishlist' rp.id %}" class="btn btn-outline-danger btn-sm me-1" title="Add to Wishlist" onclick="event.stopPropagation();">
                     <i class="far fa-heart"></i>
                   </a>
-                </li>
-                <li class="list-inline-item m-0 p-0">
-                  <a
-                    class="btn btn-sm btn-dark"
-                    href="{% url 'store:add-to-cart' %}"
-                    >Add to cart</a
-                  >
-                </li>
-              </ul>
+                  <form action="{% url 'store:add-to-cart' %}" method="get" class="d-inline m-0" onclick="event.stopPropagation();">
+                    <input type="hidden" name="prod_id" value="{{ rp.id }}">
+                    <button type="submit" class="btn btn-dark btn-sm">Add to Cart</button>
+                  </form>
+                </div>
+              </div>
+              <div class="card-body text-center pt-2">
+                <h6 class="card-title mb-1">
+                  <a href="{% url 'store:product-detail' rp.slug %}" class="text-decoration-none text-dark" onclick="event.stopPropagation();">
+                    {{ rp.title }}
+                  </a>
+                </h6>
+                <p class="text-muted mb-0 fw-semibold">₹{{ rp.price }}</p>
+              </div>
             </div>
           </div>
-          <h6>
-            <a
-              class="reset-anchor"
-              href="{% url 'store:product-detail' rp.slug %}"
-              >{{rp.title}}</a
-            >
-          </h6>
-          <p class="small text-muted">₹{{rp.price}}</p>
-        </div>
-      </div>
-
-      {% endfor %} {% endif %}
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
 </section>
 
+<style>
+  .product-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s ease-in-out;
+  }
+  .product-card:hover .product-overlay {
+    opacity: 1;
+  }
+
+  .zoom-container {
+    position: relative;
+  }
+
+  #main-image {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+  }
+
+  #zoom-view {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.4);
+    display: none;
+    pointer-events: none;
+  }
+
+  .zoom-result-fixed {
+    position: fixed;
+    top: 80px; /* adjust as needed */
+    right: 30px; /* adjust as needed */
+    width: 800px;
+    height: 560px;
+    border: 1px solid #ccc;
+    background-repeat: no-repeat;
+    background-size: 200%;
+    z-index: 9999;
+    display: none;
+  }
+</style>
+
+<script>
+  function zoom(e) {
+    const image = document.getElementById("main-image");
+    const zoomView = document.getElementById("zoom-view");
+    const zoomResult = document.getElementById("zoom-result");
+
+    const bounds = image.getBoundingClientRect();
+    const x = e.pageX - bounds.left - window.scrollX;
+    const y = e.pageY - bounds.top - window.scrollY;
+
+    const posX = x - 50;
+    const posY = y - 50;
+
+    zoomView.style.left = `${posX}px`;
+    zoomView.style.top = `${posY}px`;
+    zoomView.style.display = "block";
+    zoomResult.style.display = "block";
+
+    const percentX = (x / image.width) * 100;
+    const percentY = (y / image.height) * 100;
+
+    zoomResult.style.backgroundImage = `url('${image.src}')`;
+    zoomResult.style.backgroundPosition = `${percentX}% ${percentY}%`;
+  }
+
+  function hideZoom() {
+    document.getElementById("zoom-view").style.display = "none";
+    document.getElementById("zoom-result").style.display = "none";
+  }
+</script>
 
 {% endblock content %}

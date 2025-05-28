@@ -110,40 +110,45 @@
               </div>
             </div>
 
-            <div class="row">
+            <div class="row g-4">
               {% if products %}
                 {% for product in products %}
-                  <!-- PRODUCT-->
-                  <div class="col-lg-4 col-sm-6">
-                    <div class="product text-center">
-                      <div class="mb-3 position-relative">
-                        <div class="badge text-white badge-"></div>
-                        <a class="d-block" href="{% url 'store:product-detail' product.slug %}">
-                          {% if product.product_image %}
-                            <img class="img-fluid w-100" src="{{product.product_image.url}}" alt="{{product.title}}">
-                          {% else %}
-                            <img class="img-fluid w-100" src="{% static 'img/product-1.jpg' %}" alt="{{product.title}}">
-                          {% endif %}
-                        </a>
-                        <div class="product-overlay">
-                          <ul class="mb-0 list-inline">
-                            <li class="list-inline-item m-0 p-0"><a class="btn btn-sm btn-outline-dark" href="#"><i class="far fa-heart"></i></a></li>
-                            <li class="list-inline-item m-0 p-0">
-                              <form action="{% url 'store:add-to-cart' %}">
-                                <input type="hidden" name="prod_id" value="{{product.id}}" id="product_id">
-                                <button type="submit" class="btn btn-sm btn-dark">Add to Cart</button>
-                              </form>
-                            </li>
-                          </ul>
+                  <!-- PRODUCT CARD -->
+                  <div class="col-lg-4 col-sm-6 mb-3">
+                    <div class="card h-100 border-0 shadow-sm product-card" style="cursor: pointer;" onclick="window.location.href='{% url 'store:product-detail' product.slug %}'">
+                      
+                      <div class="position-relative">
+                        {% if product.product_image %}
+                          <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.title }}" style="height: 250px; object-fit: cover;">
+                        {% else %}
+                          <img src="{% static 'img/product-1.jpg' %}" class="card-img-top" alt="{{ product.title }}" style="height: 250px; object-fit: cover;">
+                        {% endif %}
+            
+                        <div class="product-overlay position-absolute top-0 end-0 p-2" style="z-index: 10;">
+                          <a href="{% url 'store:add-to-wishlist' product.id %}" class="btn btn-outline-danger btn-sm" title="Add to Wishlist" onclick="event.stopPropagation();">
+                            <i class="far fa-heart"></i>
+                          </a>
+                          <form action="{% url 'store:add-to-cart' %}" method="get" class="d-inline" onclick="event.stopPropagation();">
+                            <input type="hidden" name="prod_id" value="{{ product.id }}">
+                            <button type="submit" class="btn btn-sm btn-dark">Add to Cart</button>
+                          </form>
                         </div>
                       </div>
-                      <h6><a class="reset-anchor" href="{% url 'store:product-detail' product.slug %}">{{product.title}}</a></h6>
-                      <p class="small text-muted">₹{{product.price}}</p>
+            
+                      <div class="card-body text-center d-flex flex-column justify-content-between">
+                        <div>
+                          <h6 class="card-title mb-1">
+                            <a href="{% url 'store:product-detail' product.slug %}" class="text-decoration-none text-dark" onclick="event.stopPropagation();">{{ product.title }}</a>
+                          </h6>
+                          <p class="text-muted fw-semibold mb-0">₹{{ product.price }}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 {% endfor %}
               {% endif %}
             </div>
+            
 
             <div class="d-flex justify-content-center justify-content-lg-end mt-4">
               <nav aria-label="Page navigation">
@@ -163,4 +168,29 @@
       </div>
     </section>
   </div>
+
+  <style>
+    .product-card {
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .product-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      transition: 0.3s ease-in-out;
+    }
+    .product-card:hover .product-overlay {
+      opacity: 1;
+    }
+
+  </style>
 {% endblock content %}
