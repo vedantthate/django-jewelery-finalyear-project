@@ -27,6 +27,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from .models import Order
+from django.db import models
 # Create your views here.
 
 def home(request):
@@ -46,8 +47,16 @@ def home(request):
         if mail!=None:
             messages.success(request,"Subscribed Successfully..")
             return redirect('store:home')
-    
+
+    now = timezone.now()
+    active_coupons= Coupon.objects.filter(
+        is_active=True,
+        valid_from__lte=now,
+        valid_to__gte=now,
+        used_count__lt=models.F('usage_limit')
+    )
     context = {
+        'coupons': active_coupons,
         'categories': categories,
         'products': products,
     }
@@ -63,6 +72,10 @@ def detail(request, slug):
 
     }
     return render(request, 'store/detail.html', context)
+
+def all_products(request):
+    products = Product.objects.all()
+    return render(request, 'store/show_all_products.html', {'products': products})
 
 
 def all_categories(request):
@@ -317,6 +330,15 @@ def cart(request):
             applied_coupon = None
             messages.warning(request, "Applied coupon was not found.")
 
+    
+    now = timezone.now()
+    active_coupons= Coupon.objects.filter(
+        is_active=True,
+        valid_from__lte=now,
+        valid_to__gte=now,
+        used_count__lt=models.F('usage_limit')
+    )
+    
     addresses = Address.objects.filter(user=user)
         
     context = {
@@ -331,6 +353,7 @@ def cart(request):
         'discount_amount': discount_amount,
         'total_amount_after_discount': total_amount_after_discount,
         'item_count': cart_products.count(),
+        'active_coupons': active_coupons,
     }
     
     return render(request, 'store/cart.html', context)

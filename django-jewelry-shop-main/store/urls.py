@@ -28,6 +28,7 @@ urlpatterns = [
     path('invoice/<int:order_id>/', views.invoice_view, name='invoice'),
     path('apply-coupon/', views.apply_coupon, name='apply_coupon'),
     path('remove-coupon/', views.remove_coupon, name='remove_coupon'),
+    path('all-products/', views.all_products, name='all-products'),
     
     path('contact/',views.contact,name='contact'),
     path('blog/', views.blog_list, name='blog_list'),
