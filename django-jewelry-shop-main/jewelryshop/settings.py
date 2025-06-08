@@ -175,11 +175,14 @@ JAZZMIN_SETTINGS = {
         "store.Cart": "fas fa-shopping-cart",
         "store.Order": "fas fa-shipping-fast",
         "store.OrderItem": "fas fa-boxes",
+        "store.Coupon": "fas fa-ticket-alt",  
         "store.Wishlist": "fas fa-heart",
         "store.Blog": "fas fa-blog",
         "store.Customer": "fas fa-user-friends",
         "store.Review": "fas fa-comments",
         "store.Payment": "fas fa-credit-card",
+
+
     },
 
     # Admin form layout

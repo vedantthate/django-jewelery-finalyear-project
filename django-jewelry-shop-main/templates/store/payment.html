@@ -1,7 +1,6 @@
 {% block payment-gateway %}
 <form method="post" action="{% url 'store:generate-payment' %}">
     {% csrf_token %}
-    {% csrf_token %}
     {% if addresses %}
       {% for address in addresses %}
         <div class="mb-3">

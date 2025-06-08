@@ -10,7 +10,7 @@
   <div class="row g-4">
     {% if wishlist_items %}
       {% for item in wishlist_items %}
-        <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
           <a href="{% url 'store:product-detail' item.product.slug %}" class="card-link">
             <div class="card h-100 border-0 shadow-sm product-card">
               <div class="position-relative">

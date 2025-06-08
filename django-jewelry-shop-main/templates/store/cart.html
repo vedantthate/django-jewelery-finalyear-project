@@ -29,22 +29,22 @@
           <div class="row">
             <div class="col-lg-8 mb-4 mb-lg-0">
               <!-- CART TABLE-->
-              <div class="table-responsive mb-4">
+              <div class="table-responsive mb-4 ">
                 <table class="table">
                   <thead class="bg-light">
                     <tr>
-                      <th class="border-0" scope="col"> <strong class="text-small text-uppercase">Product</strong></th>
-                      <th class="border-0" scope="col"> <strong class="text-small text-uppercase">Price</strong></th>
-                      <th class="border-0" scope="col"> <strong class="text-small text-uppercase">Quantity</strong></th>
-                      <th class="border-0" scope="col"> <strong class="text-small text-uppercase">Total</strong></th>
-                      <th class="border-0" scope="col"> </th>
+                      <th class="border-1" scope="col"> <strong class="text-small text-uppercase">Product</strong></th>
+                      <th class="border-1" scope="col"> <strong class="text-small text-uppercase">Price</strong></th>
+                      <th class="border-1" scope="col"> <strong class="text-small text-uppercase">Quantity</strong></th>
+                      <th class="border-1" scope="col"> <strong class="text-small text-uppercase">Total</strong></th>
+                      <th class="border-1" scope="col"> </th>
                     </tr>
                   </thead>
                   <tbody>
 
                     {% for cart_product in cart_products %}
                     <tr>
-                      <th class="pl-0 border-0" scope="row">
+                      <th class="pl-0 border-1" scope="row">
                         <div class="media align-items-center">
 
                           {% if cart_product.product.product_image %}
@@ -56,10 +56,10 @@
                           <div class="media-body ml-3"><strong class="h6"><a class="reset-anchor animsition-link" href="{% url 'store:product-detail' cart_product.product.slug %}">{{cart_product.product.title}}</a></strong></div>
                         </div>
                       </th>
-                      <td class="align-middle border-0">
+                      <td class="align-middle border-1">
                         <p class="mb-0 small">₹{{cart_product.product.price}}</p>
                       </td>
-                      <td class="align-middle border-0">
+                      <td class="align-middle border-1">
                         <div class="border d-flex align-items-center justify-content-between px-3"><span class="small text-uppercase text-gray headings-font-family">Quantity</span>
                           <div class="quantity">
                             <a href="{% url 'store:minus-cart' cart_product.id %}" class="dec-btn p-0 ml-"><i class="fas fa-minus"></i></a>
@@ -70,18 +70,18 @@
                           </div>
                         </div>
                       </td>
-                      <td class="align-middle border-0">
+                      <td class="align-middle border-1">
                         <p class="mb-0 small">₹{{cart_product.total_price|intcomma}}</p>
                       </td>
-                      <td class="align-middle border-0"><a class="reset-anchor" href="{% url 'store:remove-cart' cart_product.id %}"><i class="fas fa-trash-alt small text-muted"></i></a></td>
+                      <td class="align-middle border-1"><a class="reset-anchor" href="{% url 'store:remove-cart' cart_product.id %}"><i class="fas fa-trash-alt small text-muted"></i></a></td>
                     </tr>
                     {% endfor %}
 
                   </tbody>
                 </table>
               </div>
-              <!-- CART NAV-->
-              <div class="bg-light px-4 py-3">
+              <!-- CART NAV--><hr>
+              <div class="bg-light px-2 py-2">
                 <div class="row align-items-center text-center">
                   <div class="col-md-6 mb-3 mb-md-0 text-md-left"><a class="btn btn-link p-0 text-dark btn-sm" href="{% url 'store:home' %}"><i class="fas fa-long-arrow-alt-left mr-2"> </i>Continue shopping</a></div>
                   <div class="col-md-6 text-md-right"><a class="btn btn-outline-dark btn-sm" href="{% url 'store:checkout' %}">Procceed to checkout<i class="fas fa-long-arrow-alt-right ml-2"></i></a></div>
@@ -93,25 +93,65 @@
               <div class="card border-0 rounded-0 p-lg-4 bg-light">
                 <div class="card-body">
                   <h5 class="text-uppercase mb-4">Cart total</h5>
-                  <ul class="list-unstyled mb-0">
-                    <li class="d-flex align-items-center justify-content-between"><strong class="text-uppercase small font-weight-bold">Subtotal</strong><span class="text-muted small">₹{{amount|intcomma}}</span></li>
-                    <li class="d-flex align-items-center justify-content-between"><strong class="text-uppercase small font-weight-bold">Shipping Charge</strong><span class="text-muted small">+₹{{shipping_amount}}</span></li>
-                    <li class="border-bottom my-2"></li>
-                    <li class="d-flex align-items-center justify-content-between mb-4"><strong class="text-uppercase small font-weight-bold">Total</strong><span>₹{{total_amount|intcomma}}</span></li>
-                    <li>
+                  <ul class="list-group list-group-flush shadow-sm rounded border">
 
-                      <form action="#">
-                        <div class="form-group mb-0">
-                          <input class="form-control" type="text" placeholder="Enter your coupon">
-                          <button class="btn btn-dark btn-sm btn-block" type="submit"> <i class="fas fa-gift mr-2"></i>Apply coupon</button>
-                        </div>
-                      </form> 
-
+                    <!-- Subtotal -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                      <strong class="text-muted">Price ({{ item_count }} items)</strong>
+                      <span class="text-dark">₹{{ amount|intcomma }}</span>
                     </li>
-                  </ul>
-
                   
-                  <h5 class="text-uppercase my-5">Select Shipping Address</h5>
+                    <!-- Shipping -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <strong class="text-muted">Delivery Charges</strong>
+                      <span class="text-dark">{% if shipping_amount > 0 %}+₹{{ shipping_amount }}{% else %}<span class="text-success">Free</span>{% endif %}</span>
+                    </li>
+                  
+                    {% if discount > 0 %}
+                    <!-- Coupon Applied -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center text-success">
+                      <div>
+                        <strong>Coupon Applied: {{ coupon.code }}</strong><br>
+                        <small>You saved ₹{{ discount_amount|floatformat:2 }}</small>
+                      </div>
+                      <form action="{% url 'store:remove_coupon' %}" method="post" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link p-0 m-0 align-middle" style="text-decoration:none; color:#6c757d;">
+                          <i class="fas fa-trash-alt small"></i>
+                        </button>
+                      </form>
+                    </li>
+                  
+                    <!-- Original Total before discount -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center text-muted">
+                      <span>Total Before Discount</span>
+                      <span>₹{{ total_amount|intcomma }}</span>
+                    </li>
+                    {% endif %}
+                  
+                    <!-- Final Total -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                      <strong class="text-uppercase">Total Amount</strong>
+                      <strong class="text-success">₹{{ total_amount_after_discount|intcomma }}</strong>
+                    </li>
+                  
+                    <!-- Apply Coupon -->
+                    {% if not discount %}
+                    <li class="list-group-item">
+                      <form method="post" action="{% url 'store:apply_coupon' %}" class="w-100">
+                        {% csrf_token %}
+                        <div class="form-group">
+                          {{ coupon_form.code }}
+                          <button class="btn btn-dark btn-sm btn-block mt-2" type="submit">
+                            <i class="fas fa-gift mr-2"></i>Apply coupon
+                          </button>
+                        </div>
+                      </form>
+                    </li>
+                    {% endif %}
+                  </ul>
+                  
+                  <h5 class="text-uppercase my-4">Select Shipping Address</h5>
                   <form action="{% url 'store:checkout' %}" id="myform" method='post'>
                     {% csrf_token %}
                     {% if addresses %}
@@ -123,7 +163,6 @@
                       {% endfor %}
                     {% endif %}
                         
-                    <div class="text-end" id="paypal-button-container" name="payment_method" value="Online"></div>
                     {% comment %} For Cash on Delivery {% endcomment %}
                     <button type="submit" class="btn btn-dark btn-lg btn-outline-dark" name="payment_method" value="COD" type="submit">
                       <i class="bi bi-currency-rupee"></i></i>Cash on Delivery</button>

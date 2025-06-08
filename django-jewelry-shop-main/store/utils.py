@@ -78,12 +78,15 @@ def send_order(order, razorpay_order_id):
     user_email = order.user.email
     order_items = order.items.all()  # Using related_name="items"
     subtotal = order.subtotal
+    
     context = {
+        "order":order,
         "user": order.user.username,
         "order_id": order.id,
         "items": order_items,
         "total_amount": order.amount,
         "shiping_amount":order.shipping_charge,
+        
         "shipping_details": {
             "name": order.user.username,
             "address": order.address,

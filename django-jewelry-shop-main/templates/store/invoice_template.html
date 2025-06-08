@@ -142,18 +142,32 @@
                     {% endfor %}
                 </tbody>
                 <tfoot>
-                    <tr class="total">
+                    <tr>
                         <td colspan="3">Subtotal</td>
                         <td>₹{{ subtotal }}</td>
                     </tr>
-                    <tr class="total">
+                    <tr class="">
                         <td colspan="3">Shipping</td>
-                        <td>₹{{ shipping_charge }}</td>
+                        <td>₹{{ order.shipping_charge }}</td>
                     </tr>
-                    <tr class="total">
+                    <tr class="">
                         <td colspan="3">Total</td>
                         <td>₹{{ total_amount }}</td>
                     </tr>
+                    {% if order.coupon%}
+                        <tr class="">
+                            <td colspan="3">Coupon Applied</td>
+                            <td>₹{{ order.coupon }}</td>
+                        </tr>
+                        <tr class="">
+                            <td colspan="3">Discount Amount</td>
+                            <td>₹{{ order.discount_amount }}</td>
+                        </tr>
+                        <tr class="">
+                            <td colspan="3">Final Amount</td>
+                            <td>₹{{ order.final_amount }}</td>
+                        </tr>
+                    {% endif %}
                 </tfoot>
             </table>
         </div>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Address, Blog, Category, Product, Cart, Order,OrderItem
+from .models import Address, Blog, Category, Product, Cart, Order, OrderItem, Coupon
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from .utils import send_delivery_email
@@ -61,6 +61,14 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ['is_active']  
 
     search_fields = ('username', 'email')
+    
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['code', 'discount_type', 'discount_value', 'usage_limit', 'used_count', 'is_active']
+    list_filter = ['is_active', 'discount_type']
+    search_fields = ['code']
+
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

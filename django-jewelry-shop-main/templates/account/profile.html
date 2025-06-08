@@ -1,91 +1,112 @@
 {% extends 'base.html' %}
 {% load static %}
 
-    {% block content %}
+{% block content %}
+<div class="container py-5">
+  {% include 'partials/_messages.html' %}
 
-      <div class="container py-5">
-        {% include 'partials/_messages.html' %}
+  <!-- User Profile Section -->
+  <div class="card border-0 shadow-sm mb-5">
+    <div class="card-body">
+      <h3 class="fw-semibold mb-3">{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+      <p class="mb-2"><strong>Email:</strong> {{ request.user.email }}</p>
+      <p class="mb-4"><strong>Username:</strong> {{ request.user.username }}</p>
+      <a href="{% url 'store:add-address' %}" class="btn btn-primary me-2">Add Address</a>
+      <a href="{% url 'store:orders' %}" class="btn btn-outline-primary">View Orders</a>
+    </div>
+  </div>
 
-        <div class="jumbotron">
-          <h1>{{request.user.first_name}} {{request.user.last_name}}</h1>
-          <p><strong>Email:</strong> {{request.user.email}}</p>
-          <p><strong>Username:</strong> {{request.user.username}}</p>
-          <p><a class="btn btn-primary btn-large" href="{% url 'store:add-address' %}">Add Address »</a> <a class="btn btn-outline-primary btn-large" href="{% url 'store:orders' %}">My Orders »</a></p>
+  <!-- Row for Address and Orders -->
+  <div class="row mb-3">
+    <!-- Addresses Section -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+          <span>Saved Addresses</span>
+          <a href="{% url 'store:add-address' %}" class="btn btn-sm btn-light border">+ Add</a>
         </div>
-
-
-        <div class="row">
-
-          <div class="col-lg-6">
-            <div class="card mb-4" id="headings">
-              <div class="card-header">Addresses <span class="float-right"><a href="{% url 'store:add-address' %}">Add Address</a></span></div>
-              <div class="card-body">
-                {% if addresses %}
-                    {% for address in addresses %}
-                        <h4 class="mb-3">Address {{forloop.counter}}</h4> 
-                        
-                        <span class="float-right"><a href="{% url 'store:remove-address' address.id %}"><i class="fas fa-trash-alt small text-muted"></i></a></span>
-
-                        <p>
-                            <strong>Address: </strong>{{address.address}} <br>
-                            <strong>Mobile Number: </strong>{{address.user_phone_number}} <br>
-                            <strong>City: </strong>{{address.city}} <br>
-                            <strong>State: </strong>{{address.state}} <br>
-                            <strong>Pincode: </strong>{{address.pincode}} <br>
-                        </p>
-
-                        <hr>
-                    {% endfor %}
-                {% else %}
-                <div class="text-danger">
-                  Address not Added.
+        <div class="card-body">
+          {% if addresses %}
+            {% for address in addresses %}
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <h6 class="mb-0">Address {{ forloop.counter }}</h6>
+                  <a href="{% url 'store:remove-address' address.id %}" class="text-danger">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
                 </div>
-                {% endif %}
-                
+                <div>
+                  <div><strong>Address:</strong> {{ address.address }}</div>
+                  <div><strong>Mobile:</strong> {{ address.user_phone_number }}</div>
+                  <div><strong>City:</strong> {{ address.city }}</div>
+                  <div><strong>State:</strong> {{ address.state }}</div>
+                  <div><strong>Pincode:</strong> {{ address.pincode }}</div>
+                </div>
+                {% if not forloop.last %}<hr>{% endif %}
               </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="card mb-4" id="tables">
-              <div class="card-header">Orders</div>
-              <div class="card-body">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Item</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% if orders %}
-                      {% for order in orders %}
-                        <tr>
-                          <td>{{forloop.counter}}</td>
-                          <td>{{order.product.title}}</td>
-                          <td>
-                            {{order.status}}
-                          </td>
-                        </tr>
-                      {% endfor %}
-                    {% else %}
-                    <tr>
-                      <td class="text-danger" colspan="3">You've not Ordered anything yet.</td>
-                    </tr>
-                    {% endif %}
-                    
-                    
-                  </tbody>
-                </table>
-                
-              </div>
-            </div>
-          </div>
-          
+            {% endfor %}
+          {% else %}
+            <p class="text-muted">No address added yet.</p>
+          {% endif %}
         </div>
-    
-        
-        
       </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Recent Orders</div>
+        <div class="card-body">
+          {% if orders %}
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center" style="width: 50px;">#</th>
+                    <th>Item</th>
+                    <th class="text-center" style="width: 120px;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                    <tr>
+                      <td class="text-center">{{ forloop.counter }}</td>
+                      <td>{{ order.product.title }}</td>
+                      <td class="text-center">
+                        <span class="badge bg-secondary">{{ order.status }}</span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">You haven't placed any orders yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Account Settings Section -->
+  <div class="col-lg-6 mb-4">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white fw-semibold">Account Settings</div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <a href="{% url 'store:password-change' %}" class="text-decoration-none">Change Password</a>
+          </li>
+          <li class="list-group-item">
+            <form id="logout-form" method="post" action="{% url 'store:logout' %}" style="display: none;">
+              {% csrf_token %}
+            </form>
+            <a class="text-decoration-none text-danger" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

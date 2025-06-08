@@ -1,9 +1,11 @@
 from datetime import timedelta
+import decimal
 from django.utils import timezone
 
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class Address(models.Model):
@@ -106,7 +108,9 @@ class Order(models.Model):
     tracking_uid = models.CharField(max_length=100, unique=True, blank=True, null=True)
     estimated_delivery = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, null=True, blank=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    final_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     status = models.CharField(
         choices=STATUS_CHOICES,
@@ -175,3 +179,33 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# New Coupon Model
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_type = models.CharField(
+    max_length=10,
+    choices=[('percentage', 'Percentage'), ('fixed', 'Fixed')],
+    default='percentage'
+)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active = models.BooleanField(default=True)
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    usage_limit = models.PositiveIntegerField(default=1)
+    used_count = models.PositiveIntegerField(default=0)
+
+    def is_valid(self):
+        now = timezone.now()
+        return self.is_active and self.valid_from <= now <= self.valid_to and self.used_count < self.usage_limit
+
+    def get_discount_amount(self, total_amount):
+        if self.discount_type == 'percentage':
+            return (self.discount_value / 100) * total_amount
+        elif self.discount_type == 'fixed':
+            return self.discount_value
+        return decimal.Decimal(0)
+
+    def __str__(self):
+        return self.code

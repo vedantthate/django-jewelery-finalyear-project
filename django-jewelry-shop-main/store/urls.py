@@ -26,6 +26,8 @@ urlpatterns = [
     path('order/track/<str:tracking_uid>/', views.track_order_direct, name='track_order_direct'),
     path('search/', views.search_products, name='search'),
     path('invoice/<int:order_id>/', views.invoice_view, name='invoice'),
+    path('apply-coupon/', views.apply_coupon, name='apply_coupon'),
+    path('remove-coupon/', views.remove_coupon, name='remove_coupon'),
     
     path('contact/',views.contact,name='contact'),
     path('blog/', views.blog_list, name='blog_list'),

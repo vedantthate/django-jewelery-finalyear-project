@@ -5,8 +5,25 @@
 {% block content %}
 {% include 'partials/_messages.html' %}
 
-<div class="container py-5">
-  <h3 class="mb-4">My Orders</h3>
+<div class="container">
+  <section class="py-5 bg-light mb-3">
+    <div class="container">
+      <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+        <div class="col-lg-6">
+          <h1 class="h2 text-uppercase mb-0">Order</h1>
+        </div>
+        <div class="col-lg-6 text-lg-right">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
+              <li class="breadcrumb-item active"><a href="{% url 'store:home' %}">Home</a></li>
+              <li class="breadcrumb-item" aria-current="page">Order</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
+  <h4 class="mb-4 ml-2">My Orders</h4>
 
   {% if orders %}
     {% for order in orders %}
@@ -57,16 +74,25 @@
 
       <!-- Total Summary -->
       <div class="px-4 py-3">
-        <p class="mb-1"><strong>Subtotal:</strong> ₹{{ order.subtotal|intcomma }}</p>
-        <p class="mb-1"><strong>Shipping:</strong> ₹{{ order.shipping_charge }}</p>
-        <p class="mb-0"><strong>Total Amount:</strong> ₹{{ order.subtotal|add:order.shipping_charge|intcomma }}</p>
+        <p class="mb-1"><strong>Subtotal:</strong> ₹{{ order.amount|intcomma }}</p>
+        <p class="mb-1"><strong>Shipping:</strong> ₹{{ order.shipping_charge|intcomma }}</p>
+
+        {% if order.coupon %}
+        <p class="mb-1"><strong>Total Before Discount:</strong> ₹{{ order.subtotal|add:order.shipping_charge|intcomma|floatformat:2  }}</p>
+        <p class="mb-1 text-success">
+          <strong>Coupon:</strong> {{ order.coupon.code }} <br>
+          <small>You saved ₹{{ order.discount_amount|floatformat:2 }}</small>
+        </p>
+        {% endif %}
+
+        <p class="mb-0"><strong>Total Amount:</strong> ₹{{ order.final_amount|intcomma }}</p>
       </div>
 
       <div class="card-footer text-end bg-light">
         <a href="{% url 'store:invoice' order.id %}" class="btn btn-sm btn-outline-primary" target="_blank">
           Download Invoice
-      </a>
-      
+        </a>
+
         {% if order.status != 'Cancelled' and order.status != 'Pending' %}
         <a href="{% url 'store:track_order_direct' order.tracking_uid %}" class="btn btn-sm btn-primary">Track Order</a>
         {% endif %}
