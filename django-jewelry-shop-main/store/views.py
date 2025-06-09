@@ -75,7 +75,26 @@ def detail(request, slug):
 
 def all_products(request):
     products = Product.objects.all()
-    return render(request, 'store/show_all_products.html', {'products': products})
+    sort_option = request.GET.get('sorting', 'default')
+    
+    if sort_option == 'low-high':
+        products = products.order_by('price')
+    elif sort_option == 'high-low':
+        products = products.order_by('-price')
+    else:
+        products = products.order_by('-created_at')  
+
+    # Pagination
+    page_number = request.GET.get('page')
+    paginator = Paginator(products, 12)
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'products': page_obj,       
+        'sort_option': sort_option,
+    }
+
+    return render(request, 'store/show_all_products.html', context)
 
 
 def all_categories(request):
@@ -685,7 +704,11 @@ def add_to_wishlist(request, product_id):
 @login_required
 def wishlist_view(request):
     wishlist_items = Wishlist.objects.filter(user=request.user)
-    return render(request, 'wishlist.html', {'wishlist_items': wishlist_items})
+    page_number = request.GET.get('page')
+    paginator = Paginator(wishlist_items, 12)  
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'wishlist.html', {'wishlist_items': page_obj})
 
 @login_required
 def track_order(request):
