@@ -1,223 +1,199 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
+{% include 'partials/_messages.html' %}
 
 <div class="container">
-  <!-- HERO SECTION-->
+  <!-- HERO SECTION -->
   <section class="py-5 bg-light">
-    <div class="container">
-      <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
-        <div class="col-lg-6">
-          <h1 class="h2 text-uppercase mb-0">Checkout</h1>
-        </div>
-        <div class="col-lg-6 text-lg-right">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
-              <li class="breadcrumb-item active"><a href="{% url 'store:home' %}">Home</a></li>
-              <li class="breadcrumb-item active"><a href="{% url 'store:cart' %}">Cart</a></li>
-              <li class="breadcrumb-item" aria-current="page">Checkout</li>
-            </ol>
-          </nav>
-        </div>
+    <div class="row px-4 py-lg-4 align-items-center">
+      <div class="col-lg-6">
+        <h1 class="h2 text-uppercase mb-0">Checkout</h1>
+      </div>
+      <div class="col-lg-6 text-lg-end">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-lg-end mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'store:cart' %}">Cart</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+          </ol>
+        </nav>
       </div>
     </div>
   </section>
 
   <section class="py-5">
-    <!-- BILLING ADDRESS-->
-    <h2 class="h5 text-uppercase mb-4">Billing details</h2>
     <div class="row">
-      <div class="col-lg-8">
-        <form action="#">
-          <div class="row">
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="firstName">First name</label>
-              <input class="form-control form-control-lg" id="firstName" type="text" placeholder="Enter your first name">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="lastName">Last name</label>
-              <input class="form-control form-control-lg" id="lastName" type="text" placeholder="Enter your last name">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="email">Email address</label>
-              <input class="form-control form-control-lg" id="email" type="email" placeholder="e.g. Jason@example.com">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="phone">Phone number</label>
-              <input class="form-control form-control-lg" id="phone" type="tel" placeholder="e.g. +02 245354745">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="company">Company name (optional)</label>
-              <input class="form-control form-control-lg" id="company" type="text" placeholder="Your company name">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="country">Country</label>
-              <select class="form-control form-control-lg" id="country" name="country">
-                <option value="">Select your country</option>
-                <option value="India">India</option>
-                <option value="United States">United States</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Canada">Canada</option>
-                <option value="Australia">Australia</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="Japan">Japan</option>
-                <option value="China">China</option>
-                <option value="Brazil">Brazil</option>
-              </select>
-            </div>
-            <div class="col-lg-12 form-group">
-              <label class="text-small text-uppercase" for="address">Address line 1</label>
-              <input class="form-control form-control-lg" id="address" type="text" placeholder="House number and street name">
-            </div>
-            <div class="col-lg-12 form-group">
-              <label class="text-small text-uppercase" for="addressalt">Address line 2</label>
-              <input class="form-control form-control-lg" id="addressalt" type="text" placeholder="Apartment, Suite, Unit, etc (optional)">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="city">Town/City</label>
-              <input class="form-control form-control-lg" id="city" type="text">
-            </div>
-            <div class="col-lg-6 form-group">
-              <label class="text-small text-uppercase" for="state">State/County</label>
-              <input class="form-control form-control-lg" id="state" type="text">
-            </div>
+      <!-- BILLING DETAILS -->
+      <div class="col-lg-8 mb-4">
+        <h2 class="h5 text-uppercase mb-4">Billing Details</h2>
+        <div class="card border-0 shadow-sm bg-light equal-height">
+          <div class="card-header bg-light fw-semibold d-flex justify-content-between align-items-center">
+            <span>Saved Addresses</span>
+            <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="collapse" data-bs-target="#addAddressForm" aria-expanded="false" aria-controls="addAddressForm">
+              + Add
+            </button>
+          </div>
 
-            <!-- Alternate Address Checkbox -->
-            <div class="col-lg-6 form-group">
-              <div class="custom-control custom-checkbox">
-                <input class="custom-control-input" id="alternateAddressCheckbox" type="checkbox">
-                <label class="custom-control-label text-small" for="alternateAddressCheckbox">Alternate billing address</label>
-              </div>
-            </div>
-
-            <!-- Alternate Address Section -->
-            <div class="col-lg-12">
-              <div class="row d-none" id="alternateAddress">
-                <div class="col-12 mt-4">
-                  <h2 class="h4 text-uppercase mb-4">Alternative billing details</h2>
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="firstName2">First name</label>
-                  <input class="form-control form-control-lg" id="firstName2" type="text" placeholder="Enter your first name">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="lastName2">Last name</label>
-                  <input class="form-control form-control-lg" id="lastName2" type="text" placeholder="Enter your last name">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="email2">Email address</label>
-                  <input class="form-control form-control-lg" id="email2" type="email" placeholder="e.g. Jason@example.com">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="phone2">Phone number</label>
-                  <input class="form-control form-control-lg" id="phone2" type="tel" placeholder="e.g. +02 245354745">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="company2">Company name (optional)</label>
-                  <input class="form-control form-control-lg" id="company2" type="text" placeholder="Your company name">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="country2">Country</label>
-                  <select class="form-control form-control-lg" id="country2" name="country2">
-                    <option value="">Select your country</option>
-                    <option value="India">India</option>
-                    <option value="United States">United States</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Japan">Japan</option>
-                    <option value="China">China</option>
-                    <option value="Brazil">Brazil</option>
-                  </select>
-                </div>
-                <div class="col-lg-12 form-group">
-                  <label class="text-small text-uppercase" for="address2">Address line 1</label>
-                  <input class="form-control form-control-lg" id="address2" type="text" placeholder="House number and street name">
-                </div>
-                <div class="col-lg-12 form-group">
-                  <label class="text-small text-uppercase" for="addressalt2">Address line 2</label>
-                  <input class="form-control form-control-lg" id="addressalt2" type="text" placeholder="Apartment, Suite, Unit, etc (optional)">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="city3">Town/City</label>
-                  <input class="form-control form-control-lg" id="city3" type="text">
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="state4">State/County</label>
-                  <input class="form-control form-control-lg" id="state4" type="text">
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-12 form-group">
-              <button class="btn btn-dark" type="submit" href="{% url 'store:orders' %}">Place order</button>
+          <div class="collapse mt-2" id="addAddressForm">
+            <div class="card card-body border-0 bg-light shadow-sm">
+              <h6 class="mb-3">Add New Address</h6>
+              <form method="post" action="{% url 'store:add-address' %}">
+                {% csrf_token %}
+                {% for fm in form %}
+                  <div class="mb-2">
+                    {{ fm.label_tag }}
+                    {{ fm }}
+                    <small class="text-danger">{{ fm.errors|striptags }}</small>
+                  </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-dark btn-sm">Save Address</button>
+              </form>
             </div>
           </div>
-        </form>
+
+          <div class="card-body">
+            {% if addresses %}
+              {% for address in addresses %}
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <h6 class="mb-0">Address {{ forloop.counter }}</h6>
+                    <a href="{% url 'store:remove-address' address.id %}" class="text-danger">
+                      <i class="fas fa-trash-alt"></i>
+                    </a>
+                  </div>
+                  <div>
+                    <div><strong>Address:</strong> {{ address.address }}</div>
+                    <div><strong>Mobile:</strong> {{ address.user_phone_number }}</div>
+                    <div><strong>City:</strong> {{ address.city }}</div>
+                    <div><strong>State:</strong> {{ address.state }}</div>
+                    <div><strong>Pincode:</strong> {{ address.pincode }}</div>
+                  </div>
+                  {% if not forloop.last %}<hr>{% endif %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted">No address added yet.</p>
+            {% endif %}
+          </div>
+        </div>
       </div>
 
       <!-- ORDER SUMMARY -->
-      <div class="col-lg-4">
-        <div class="card border-0 rounded-0 p-lg-4 bg-light">
+      <div class="col-lg-4 mb-4">
+        <div class="card border-0 rounded-0 p-lg-3 bg-light equal-height">
           <div class="card-body">
-            <h5 class="text-uppercase mb-4">Your order</h5>
-            <ul class="list-unstyled mb-0">
+            <h5 class="text-uppercase mb-4">Cart Total</h5>
+            <ul class="list-group list-group-flush shadow-sm rounded border">
+              <li class="list-group-item d-flex justify-content-between bg-light">
+                <strong class="text-muted">Price ({{ item_count }} items)</strong>
+                <span>₹{{ amount|intcomma }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <strong class="text-muted">Delivery Charges</strong>
+                <span>{% if shipping_amount > 0 %}+₹{{ shipping_amount }}{% else %}<span class="text-success">Free</span>{% endif %}</span>
+              </li>
 
-              {% for cart_product in cart_products %}
-              <tr>
-                <th class="pl-0 border-0" scope="row">
-                  <div class="media align-items-center">
-                    {% if cart_product.product.product_image %}
-                      <a class="reset-anchor d-block animsition-link" href="{% url 'store:product-detail' cart_product.product.slug %}">
-                        <img src="{{cart_product.product.product_image.url}}" alt="{{cart_product.product.title}}" width="70"/>
-                      </a>
+              {% if discount > 0 %}
+              <li class="list-group-item d-flex justify-content-between text-success">
+                <div>
+                  <strong>Coupon Applied: {{ coupon.code }}</strong><br>
+                  <small>You saved ₹{{ discount_amount|floatformat:2 }}</small>
+                </div>
+                <form action="{% url 'store:remove_coupon' %}" method="post" class="m-0">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-link p-0 text-danger"><i class="fas fa-trash-alt small"></i></button>
+                </form>
+              </li>
+              <li class="list-group-item d-flex justify-content-between text-muted">
+                <span>Total Before Discount</span>
+                <span>₹{{ total_amount|intcomma }}</span>
+              </li>
+              {% endif %}
+
+              <li class="list-group-item d-flex justify-content-between bg-light">
+                <strong>Total Amount</strong>
+                <strong class="text-success">₹{{ total_amount_after_discount|intcomma }}</strong>
+              </li>
+
+              {% if not discount %}
+              <li class="list-group-item">
+                <div class="dropdown w-100">
+                  <button class="btn btn-dark btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                    Apply Coupon
+                  </button>
+                  <ul class="dropdown-menu w-100 p-2" style="max-height: 250px; overflow-y: auto;">
+                    {% if active_coupons %}
+                      {% for coupon in active_coupons %}
+                        <li class="mb-2">
+                          <div class="d-flex justify-content-between">
+                            <div>
+                              <strong>{{ coupon.code }}</strong> –
+                              {% if coupon.discount_type == 'percentage' %}
+                                {{ coupon.discount_value }}% off
+                              {% else %}
+                                ₹{{ coupon.discount_value }} off
+                              {% endif %}
+                              <br><small class="text-muted">Valid till {{ coupon.valid_to|date:"M d, Y" }}</small>
+                            </div>
+                            <form method="post" action="{% url 'store:apply_coupon' %}" class="ms-3">
+                              {% csrf_token %}
+                              <input type="hidden" name="code" value="{{ coupon.code }}">
+                              <button type="submit" class="btn btn-sm btn-outline-success">Apply</button>
+                            </form>
+                          </div>
+                        </li>
+                        {% if not forloop.last %}
+                        <li><hr class="dropdown-divider"></li>
+                        {% endif %}
+                      {% endfor %}
                     {% else %}
-                      <a class="reset-anchor d-block animsition-link" href="{% url 'store:product-detail' cart_product.product.slug %}">
-                        <img src="{% static 'img/product-detail-3.jpg' %}" alt="{{cart_product.product.title}}" width="70"/>
-                      </a>
+                      <li class="dropdown-item text-muted">No coupons available</li>
                     {% endif %}
-                    <div class="media-body ml-3">
-                      <strong class="h6"><a class="reset-anchor animsition-link" href="{% url 'store:product-detail' cart_product.product.slug %}">{{cart_product.product.title}}</a></strong>
-                    </div>
-                  </div>
-                </th><br/>
-                <td class="align-middle border-0"><p class="mb-0 small">₹{{cart_product.product.price}}</p></td><br/>
-              </tr>
-              {% endfor %}
-
-              <li class="d-flex align-items-center justify-content-between"><strong class="small font-weight-bold">Subtotal</strong><span class="text-muted small">₹{{amount}}</span></li>
-              <li class="border-bottom my-2"></li>
-              <li class="d-flex align-items-center justify-content-between"><strong class="small font-weight-bold">Shipping Charge</strong><span class="text-muted small">+ ₹{{shipping_amount}}</span></li>
-              <li class="border-bottom my-2"></li>
-              <li class="d-flex align-items-center justify-content-between"><strong class="text-uppercase small font-weight-bold">Total</strong><span>₹{{total_amount}}</span></li>
+                  </ul>
+                </div>
+              </li>
+              {% endif %}
             </ul>
-            <br>
-            <form action="#">
-              <div class="form-group mb-0">
-                <input class="form-control" type="text" placeholder="Enter your coupon">
-                <button class="btn btn-dark btn-sm btn-block" type="submit"> <i class="fas fa-gift mr-2"></i>Apply coupon</button>
-              </div>
-            </form> 
+
+            <!-- Order Notes -->
+            <div class="form-group mt-3">
+              <label for="order-notes" class="small text-muted">Add a note</label>
+              <textarea class="form-control form-control-sm" name="notes" rows="2" placeholder="Add special instructions..."></textarea>
+            </div>
+
+            <hr class="my-3">
+
+            <!-- Address Selection and Payment Form -->
+            <h5 class="text-uppercase mt-4 mb-3">Select Shipping Address</h5>
+            <form action="{% url 'store:cash_payment' %}" method="post">
+              {% csrf_token %}
+              {% if addresses %}
+                {% for address in addresses %}
+                  <div class="mb-2">
+                    <input type="radio" name="address" value="{{ address.id }}" required>
+                    <strong>Address {{ forloop.counter }}:</strong>
+                    {{ address.address }}, {{ address.city }}, {{ address.state }}
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="text-danger">No saved addresses. Please add one in your profile.</p>
+              {% endif %}
+
+              <button type="submit" class="btn btn-outline-dark btn-lg w-100 mt-3" name="payment_method" value="COD">
+                <i class="fas fa-money-bill-wave"></i> Cash on Delivery
+              </button>
+            </form>
+
+            <div class="text-center text-muted mt-2 mb-0">OR</div>
+
+            {% include 'store/payment.html' %}
           </div>
         </div>
       </div>
     </div>
   </section>
 </div>
-
-<script>
-  // Toggle alternate billing address form
-  document.addEventListener('DOMContentLoaded', () => {
-    const checkbox = document.getElementById('alternateAddressCheckbox');
-    const altForm = document.getElementById('alternateAddress');
-    checkbox.addEventListener('change', () => {
-      altForm.classList.toggle('d-none', !checkbox.checked);
-    });
-  });
-</script>
-
 {% endblock content %}

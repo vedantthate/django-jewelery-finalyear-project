@@ -28,6 +28,7 @@ from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from .models import Order
 from django.db import models
+from django.views.decorators.http import require_POST
 # Create your views here.
 
 def home(request):
@@ -554,6 +555,92 @@ def payment_success(request):
     print("Invalid request method, redirecting to cart...")  
     return redirect("store:cart")
 
+@login_required
+def cash_payment(request):
+    if request.method == "POST":
+        user = request.user
+        cart_products = Cart.objects.filter(user=user)
+        
+        address_id = request.POST.get("address")
+        if not address_id:
+            messages.warning(request, "Please select a shipping address.")
+            return redirect("store:cart")
+
+        payment_method = request.POST.get('payment_method', 'Online')
+        address = get_object_or_404(Address, id=address_id)
+        print(address)
+
+        amount, shipping_amount = get_cart_amount_and_order_data(user)
+        final_amount_for_payment = amount + shipping_amount
+
+        applied_coupon = None
+        discount_amount = decimal.Decimal(0)
+
+        if 'coupon_code' in request.session:
+            try:
+                coupon_code = request.session['coupon_code']
+                applied_coupon = Coupon.objects.get(code=coupon_code)
+                if applied_coupon.is_valid():
+                    discount_amount = applied_coupon.get_discount_amount(amount)
+                    final_amount_for_payment = (amount - discount_amount) + shipping_amount
+                    if final_amount_for_payment < 0:
+                        final_amount_for_payment = decimal.Decimal(0)
+                else:
+                    del request.session['coupon_code']
+                    applied_coupon = None
+                    messages.warning(request, "The applied coupon is no longer valid.")
+            except Coupon.DoesNotExist:
+                del request.session['coupon_code']
+                applied_coupon = None
+                messages.warning(request, "Invalid coupon code removed.")
+
+
+        total_quantity = 0
+        product_total_price_before_discount = decimal.Decimal(0)
+        total_amount_after_discount = final_amount_for_payment
+
+        for item in cart_products:
+            total_quantity += item.quantity
+            product_total_price_before_discount += item.product.price * item.quantity
+
+        order = Order.objects.create(
+            user=user,
+            address=address,
+            product=cart_products.first().product if cart_products.exists() else None,
+            quantity=total_quantity,
+            shipping_charge=shipping_amount,
+            amount=product_total_price_before_discount,
+            payment_method=payment_method,
+            coupon=applied_coupon,
+            discount_amount=discount_amount,
+            final_amount=total_amount_after_discount
+        )
+
+        for item in cart_products:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+        cart_products.delete()
+
+        if applied_coupon:
+            applied_coupon.used_count += 1
+            if applied_coupon.used_count >= applied_coupon.usage_limit:
+                applied_coupon.is_active = False
+            applied_coupon.save()
+            del request.session['coupon_code']
+
+        messages.success(request, f"Order placed successfully with {payment_method} method.")
+        try:
+            send_order(order, None)
+            messages.success(request, "An order confirmation email has been sent to your registered email.")
+            return render(request, 'store/success.html')
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+            messages.warning(request, "Order placed, but confirmation email could not be sent.")
+
 
 @login_required
 def apply_coupon(request):
@@ -571,9 +658,8 @@ def apply_coupon(request):
             messages.error(request, "Invalid coupon code.")
     else:
         messages.error(request, "Please enter a coupon code.")
-    return redirect('store:cart')
+    return redirect(request.META.get('HTTP_REFERER', 'store:cart'))
 
-from django.views.decorators.http import require_POST
 
 @login_required
 @require_POST
@@ -583,7 +669,8 @@ def remove_coupon(request):
         messages.success(request, "Coupon removed successfully.")
     else:
         messages.info(request, "No coupon to remove.")
-    return redirect('store:cart')
+    return redirect(request.META.get('HTTP_REFERER', 'store:cart'))
+
 
 
 @login_required
@@ -621,48 +708,64 @@ def minus_cart(request, cart_id):
 
 @login_required
 def checkout(request):
-    if request.method == "POST":
-        user = request.user
-        cart_products = Cart.objects.filter(user=user)
+    user = request.user
+    cart_products = Cart.objects.filter(user=user)
+    if not cart_products.exists():
+        messages.warning(request, "Your cart is empty.")
+        return redirect('store:cart')
 
-        # Get selected address
-        address_id = request.POST.get("address")
-        if not address_id:
-            messages.warning(request, "Please select a shipping address.")
-            return redirect("store:cart")
+    amount, shipping_amount = get_cart_amount_and_order_data(user)
+    final_amount_for_payment = amount + shipping_amount
 
-        address = get_object_or_404(Address, id=address_id)
+    # Coupon processing
+    applied_coupon = None
+    discount_amount = decimal.Decimal(0)
+    total_amount_after_discount = final_amount_for_payment
+    form = AddressForm()
 
-        # Calculate the amount (including shipping, etc.)
-        amount, shipping_amount = get_cart_amount_and_order_data(user)
+    if 'coupon_code' in request.session:
+        try:
+            coupon_code = request.session['coupon_code']
+            applied_coupon = Coupon.objects.get(code=coupon_code)
+            if applied_coupon.is_valid():
+                discount_amount = applied_coupon.get_discount_amount(amount)
+                total_amount_after_discount = (amount - discount_amount) + shipping_amount
+                if total_amount_after_discount < 0:
+                    total_amount_after_discount = decimal.Decimal(0)
+            else:
+                del request.session['coupon_code']
+                applied_coupon = None
+                messages.warning(request, "The applied coupon is no longer valid.")
+        except Coupon.DoesNotExist:
+            del request.session['coupon_code']
+            applied_coupon = None
+            messages.warning(request, "Invalid coupon code removed.")
 
-        payment_method = request.POST.get('payment_method', 'Online')   
-        # Create order records for each cart item
-        for item in cart_products:
-            order = Order.objects.create(
-                user=user,
-                address=address,
-                product=item.product,
-                quantity=item.quantity,
-                shipping_charge=shipping_amount,
-                payment_method=payment_method,  # or COD based on form input
-            )
-            order.save()
-                
-            OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=item.product.price
-                )
-            # Clear the cart after successful order creation
-            cart_products.delete()
-        messages.success(request, f"Order placed successfully with {payment_method} method.")
-        send_order(order,None)
-        messages.success(request,"An order confirmation email has been sent to your registered email.")
-        return redirect('store:orders')  
+    now = timezone.now()
+    active_coupons = Coupon.objects.filter(
+        is_active=True,
+        valid_from__lte=now,
+        valid_to__gte=now,
+        used_count__lt=models.F('usage_limit')
+    )
 
-    return render(request,'store/checkout.html')
+    # Recalculate to show final values in template
+    context = {
+        'amount': amount,
+        'shipping_amount': shipping_amount,
+        'total_amount': amount + shipping_amount,
+        'coupon_form': CouponApplyForm(),
+        'coupon': applied_coupon,
+        'discount': discount_amount,
+        'discount_amount': discount_amount,
+        'total_amount_after_discount': total_amount_after_discount,
+        'item_count': cart_products.count(),
+        'active_coupons': active_coupons,
+        'addresses': Address.objects.filter(user=user),
+        'form':form,
+    }
+
+    return render(request, 'store/checkout.html', context)
 
 
 @login_required

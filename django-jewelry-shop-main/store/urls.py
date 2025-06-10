@@ -20,6 +20,7 @@ urlpatterns = [
     path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('success/',views.payment_success,name='success'),
     path('generate-payment/', views.generate_payment, name='generate-payment'),
+    path('cash-payment/', views.cash_payment, name='cash_payment'),
     path('wishlist/', views.wishlist_view, name='wishlist'), 
     path('add-to-wishlist/<int:product_id>/', views.add_to_wishlist, name='add-to-wishlist'),
     path('orders/track/', views.track_order, name='track_order'),

@@ -78,7 +78,7 @@
         <p class="mb-1"><strong>Shipping:</strong> ₹{{ order.shipping_charge|intcomma }}</p>
 
         {% if order.coupon %}
-        <p class="mb-1"><strong>Total Before Discount:</strong> ₹{{ order.subtotal|add:order.shipping_charge|intcomma|floatformat:2  }}</p>
+        <p class="mb-1"><strong>Total Before Discount:</strong> ₹{{ order.subtotal|add:order.shipping_charge|intcomma }}</p>
         <p class="mb-1 text-success">
           <strong>Coupon:</strong> {{ order.coupon.code }} <br>
           <small>You saved ₹{{ order.discount_amount|floatformat:2 }}</small>
