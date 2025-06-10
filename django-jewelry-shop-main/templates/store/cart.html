@@ -114,12 +114,12 @@
                         <strong>Coupon Applied: {{ coupon.code }}</strong><br>
                         <small>You saved ₹{{ discount_amount|floatformat:2 }}</small>
                       </div>
-                      <form action="{% url 'store:remove_coupon' %}" method="post" style="margin: 0;">
+                      {% comment %} <form action="{% url 'store:remove_coupon' %}" method="post" style="margin: 0;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-link p-0 m-0 align-middle" style="text-decoration:none; color:#6c757d;">
                           <i class="fas fa-trash-alt small"></i>
                         </button>
-                      </form>
+                      </form> {% endcomment %}
                     </li>
                   
                     <!-- Original Total before discount -->

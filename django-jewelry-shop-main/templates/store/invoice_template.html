@@ -1,4 +1,4 @@
-<!-- templates/store/invoice_template.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,41 +134,50 @@
                 <tbody>
                     {% for item in items %}
                     <tr>
-                        <td>{{ item.product.title }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>₹{{ item.price }}</td>
-                        <td>₹{{ total_amount }}</td>
+                        <td style="border: 1px solid #ddd;">{{ item.product.title }}</td>
+                        <td style=" border: 1px solid #ddd; text-align: center;">{{ item.quantity }}</td>
+                        <td style=" border: 1px solid #ddd; text-align: right;">₹{{ item.price }}</td>
+                        <td style=" border: 1px solid #ddd; text-align: right;">₹{{ item.price }}</td>
                     </tr>
                     {% endfor %}
-                </tbody>
-                <tfoot>
                     <tr>
-                        <td colspan="3">Subtotal</td>
-                        <td>₹{{ subtotal }}</td>
+                        <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Subtotal</strong></td>
+                        <td style="border: 1px solid #ddd; text-align: right;">₹{{ subtotal }}</td>
                     </tr>
-                    <tr class="">
-                        <td colspan="3">Shipping</td>
-                        <td>₹{{ order.shipping_charge }}</td>
+                    <tr>
+                        <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Shipping Charges</strong></td>
+                        <td style="border: 1px solid #ddd; text-align: right;">₹{{ shiping_amount }}</td>
                     </tr>
-                    <tr class="">
-                        <td colspan="3">Total</td>
-                        <td>₹{{ total_amount }}</td>
-                    </tr>
-                    {% if order.coupon%}
-                        <tr class="">
-                            <td colspan="3">Coupon Applied</td>
-                            <td>₹{{ order.coupon }}</td>
+    
+                    {% if order.coupon %}
+                        <tr>
+                            <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Total Amount</strong></td>
+                            <td style="border: 1px solid #ddd; text-align: right;">
+                                <span style="text-decoration: line-through; text-decoration-color: red; text-decoration-thickness: 2px;">
+                                    ₹{{ subtotal|add:shiping_amount }}
+                                </span>
+                            </td>
                         </tr>
-                        <tr class="">
-                            <td colspan="3">Discount Amount</td>
-                            <td>₹{{ order.discount_amount }}</td>
+                        <tr>
+                            <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Coupon Applied</strong></td>
+                            <td style="border: 1px solid #ddd; text-align: right;">{{ order.coupon.code }}</td>
                         </tr>
-                        <tr class="">
-                            <td colspan="3">Final Amount</td>
-                            <td>₹{{ order.final_amount }}</td>
+                        <tr>
+                            <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Discount Amount</strong></td>
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">- ₹{{ order.discount_amount }}</td>
+                        </tr> 
+                        <tr style="background-color: #f9f9f9; font-weight: bold;">
+                            <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Final Amount</strong></td>
+                            <td style="border: 1px solid #ddd; text-align: right;">₹{{ order.final_amount }}</td>
+                        </tr>                
+                        {% else %}
+                        <tr style="background-color: #f9f9f9; font-weight: bold;">
+                            <td colspan="3" style="border: 1px solid #ddd; text-align: right;"><strong>Total Amount</strong></td>
+                            <td style="border: 1px solid #ddd; text-align: right;">₹{{ subtotal|add:shiping_amount }}</td>
                         </tr>
                     {% endif %}
-                </tfoot>
+    
+                </tbody>
             </table>
         </div>
 

@@ -942,6 +942,7 @@ def invoice_view(request, order_id):
     # Calculate subtotal and total
     subtotal = sum(item.price * item.quantity for item in items)
     total_amount = order.amount + order.shipping_charge
+    amount = order.amount
 
     # Render HTML content using the template
     html_string = render_to_string('store/invoice_template.html', {
@@ -949,6 +950,8 @@ def invoice_view(request, order_id):
         'items': items,
         'subtotal': subtotal,
         'total_amount': total_amount,
+        'amount':amount,
+        'shiping_amount':order.shipping_charge,
     })
 
     # Create the response object with the appropriate content type for PDF
