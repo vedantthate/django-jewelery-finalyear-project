@@ -23,6 +23,7 @@ urlpatterns = [
     path('cash-payment/', views.cash_payment, name='cash_payment'),
     path('wishlist/', views.wishlist_view, name='wishlist'), 
     path('add-to-wishlist/<int:product_id>/', views.add_to_wishlist, name='add-to-wishlist'),
+    path('wishlist/remove-multiple/', views.remove_multiple_wishlist, name='remove-multiple-wishlist'),
     path('orders/track/', views.track_order, name='track_order'),
     path('order/track/<str:tracking_uid>/', views.track_order_direct, name='track_order_direct'),
     path('search/', views.search_products, name='search'),

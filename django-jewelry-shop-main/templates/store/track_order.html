@@ -2,28 +2,72 @@
 {% load static %}
 {% load humanize %}
 
-
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-white">
-          <h3 class="mb-0"><i class="bi bi-gem me-2"></i> Track Your Order</h3>
-        </div>
+<style>
+  .circle {
+    transition: all 0.3s ease;
+  }
+  .circle:hover {
+    transform: scale(1.1);
+  }
+  .step-label {
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  .order-details h6 {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .map-container {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .tracking-progress {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  .order-details {
+    background: #fdfdfd;
+    padding: 20px;
+    border-radius: 10px;
+  }
+</style>
 
+<div class="container">
+  <section class="py-5 blog-header">
+    <div class="container">
+      <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+        <div class="col-lg-6">
+          <h1 class="h2 text-uppercase text-lg-left"><i class="bi bi-gem me-2 text-warning"></i> Track Your Order</h1>
+        </div>
+        <div class="col-lg-6 text-lg-right">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-lg-end mb-0 px-0 bg-transparent">
+              <li class="breadcrumb-item active"><a href="{% url 'store:home' %}">Home</a></li>
+              <li class="breadcrumb-item" aria-current="page">Track Order</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm border-0">
         <div class="card-body">
           <form method="POST" class="row g-3 mb-4">
             {% csrf_token %}
-            <div class="col-md-8">
+            <div class="col-md-9">
               <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" name="tracking_id" class="form-control form-control-lg" placeholder="Enter Order ID" required>
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="tracking_id" class="form-control form-control-lg" placeholder="Enter your Order ID" required>
               </div>
             </div>
-            <div class="col-md-4">
-              <button type="submit" class="btn btn-primary btn-lg w-100">
-                <i class="bi bi-truck me-2"></i>Track Order
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-dark btn-lg w-100">
+                <i class="bi bi-truck me-1"></i> Track
               </button>
             </div>
           </form>
@@ -33,26 +77,25 @@
               <div class="order-details mb-4">
                 <div class="row">
                   <div class="col-md-8">
-                    <h4 class="mb-3">Order #JWL{{ order.id }}</h4>
-                  </div>
-                  <div class="col-md-4">
-                    <h6 class="mb-3">AWB -- {{ order.tracking_uid }}</h6>
+                    <h4 class="text-primary mb-2">Order #JWL{{ order.id }}</h4>
+                    <p class="text-muted small">AWB: <strong>{{ order.tracking_uid }}</strong></p>
                   </div>
                 </div>
+
                 <div class="row">
                   <div class="col-md-6">
-                    <h6><i class="bi bi-calendar me-2"></i> Order Date</h6>
+                    <h6><i class="bi bi-calendar me-1 text-secondary"></i> Order Date</h6>
                     <p>{{ order.ordered_date|date:"F d, Y" }}</p>
 
-                    <h6><i class="bi bi-geo-alt me-2"></i> Delivery Address</h6>
-                    <p>{{ order.address }}<p>
+                    <h6><i class="bi bi-geo-alt me-1 text-secondary"></i> Delivery Address</h6>
+                    <p class="text-muted">{{ order.address }}</p>
                   </div>
                   <div class="col-md-6">
-                    <h6><i class="bi bi-balloon-fill me-2"></i> Items</h6>
+                    <h6><i class="bi bi-box-fill me-1 text-secondary"></i> Items</h6>
                     {% for item in order.items.all %}
-                      <p>{{ item.quantity }} × {{ item.product.title }}</p>
+                      <p class="mb-1">{{ item.quantity }} × {{ item.product.title }}</p>
                     {% endfor %}
-                    <h6><i class="bi bi-clock me-2"></i> Estimated Delivery</h6>
+                    <h6><i class="bi bi-clock me-1 text-secondary mt-3"></i> Estimated Delivery</h6>
                     <p>
                       {% if order.status == 'Delivered' %}
                         Delivered on {{ order.updated_at|date:"F d, Y" }}
@@ -60,22 +103,22 @@
                         {{ order.estimated_delivery|date:"F d, Y" }}
                       {% endif %}
                     </p>
-                    <h6><i class="bi bi-credit-card me-2"></i> Payment Mode</h6>
+                    <h6><i class="bi bi-credit-card me-1 text-secondary"></i> Payment Mode</h6>
                     <p>{{ order.payment_status }}</p>
                   </div>
                 </div>
               </div>
 
               <div class="tracking-progress mb-4">
-                <h5><i class="bi bi-list-check me-2"></i> Order Status -- {{ order.status }}</h5>
-                <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap">
+                <h5 class="mb-3"><i class="bi bi-list-check me-1"></i> Status: <span class="text-success">{{ order.status }}</span></h5>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3">
                   {% for step in tracking_steps %}
-                    <div class="text-center flex-fill position-relative" style="min-width: 70px;">
-                      <div class="circle mx-auto mb-2 d-flex align-items-center justify-content-center 
-                      {% if step == order.status %}bg-success text-white
-                      {% elif forloop.counter0 < current_index %}bg-primary text-white
-                      {% else %}bg-light text-muted{% endif %}" 
-                      style="width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;">
+                    <div class="text-center flex-fill position-relative">
+                      <div class="circle mx-auto mb-1 d-flex align-items-center justify-content-center 
+                        {% if step == order.status %}bg-success text-white
+                        {% elif forloop.counter0 < current_index %}bg-primary text-white
+                        {% else %}bg-light text-muted{% endif %}" 
+                        style="width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;">
                         {% if step == "Pending" %}
                           <i class="bi bi-hourglass-split"></i>
                         {% elif step == "Accepted" %}
@@ -93,21 +136,21 @@
                           <i class="bi bi-check-circle-fill"></i>
                         {% endif %}
                       </div>
-                      <small class="step-label d-block">{{ step }}</small>
+                      <small class="step-label">{{ step }}</small>
                       {% if forloop.counter0 < current_index %}
-                        <small class="step-date d-block text-muted">{{ order.updated_at|date:"M d" }}</small>
+                        <small class="text-muted">{{ order.updated_at|date:"M d" }}</small>
                       {% endif %}
                     </div>
                   {% endfor %}
                 </div>
               </div>
 
-              <div class="map-container mb-4">
-                <h5><i class="bi bi-map me-2"></i> Delivery Route</h5>
+              <div class="map mb-4">
+                <h5><i class="bi bi-map me-1"></i> Delivery Route</h5>
                 <div id="orderMap" style="height: 450px;"></div>
-                <div class="d-flex justify-content-between mt-2">
-                  <small><i class="bi bi-shop me-1"></i> From: Golden Glamour Warehouse, Delhi</small>
-                  <small><i class="bi bi-house-door me-1"></i> {{ order.address.city }}</small>
+                <div class="d-flex justify-content-between mt-2 text-muted small">
+                  <div><i class="bi bi-shop me-1"></i> From: Golden Glamour Warehouse, Delhi</div>
+                  <div><i class="bi bi-house-door me-1"></i> To: {{ order.address.city }}</div>
                 </div>
               </div>
 
@@ -115,22 +158,27 @@
               <div class="card shadow-sm border-0">
                 <div class="card-body d-flex align-items-center">
                   <div>
-                    <h6>Your Delivery Partner</h6>
+                    <h6 class="text-dark">Delivery Partner</h6>
                     <p>Driver: Rajesh Kumar</p>
                     <p>Contact: +91 XXXXXXX{{ order.id|slice:"-2:" }}</p>
-                    <button class="btn btn-sm btn-outline-primary"><i class="bi bi-telephone me-1"></i> Call</button>
+                    <a href="tel:+91XXXXXXXX{{ order.id|slice:'-2:' }}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-telephone me-1"></i> Call
+                    </a>
                   </div>
                 </div>
               </div>
               {% elif order.status == "Delivered" %}
-              <div class="alert alert-info mt-3"><i class="bi bi-check2-circle me-2"></i>Product has been delivered.</div>
+              <div class="alert alert-info mt-3">
+                <i class="bi bi-check2-circle me-2"></i>Product has been delivered.
+              </div>
               {% else %}
-              <div class="alert alert-info mt-3"><i class="bi bi-info-circle me-2"></i> Delivery agent info will be available once the order is out for delivery.</div>
+              <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle me-2"></i> Delivery agent info will be shown once your order is out for delivery.
+              </div>
               {% endif %}
             {% else %}
             <div class="alert alert-danger">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              No order found. Please double-check your Order ID.
+              <i class="bi bi-exclamation-triangle me-2"></i> No order found. Please double-check your Order ID.
             </div>
             {% endif %}
           {% endif %}
@@ -140,32 +188,29 @@
   </div>
 </div>
 
-<!-- Leaflet JS and Routing Machine JS -->
+<!-- Leaflet JS and Routing -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const warehouseCoords = [28.6852, 77.1431]; // Golden Glamour warehouse - Delhi
-    const deliveryCoords = [18.7356, 73.6758];  // Talegaon Dabhade, Pune
+    const warehouseCoords = [28.6852, 77.1431]; // Delhi
+    const deliveryCoords = [18.7356, 73.6758]; // Talegaon (you can replace this dynamically)
 
-    const map = L.map('orderMap').setView([23.5, 78.9], 6); // Center of India
+    const map = L.map('orderMap').setView([23.5, 78.9], 6);
 
-    // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Routing control with highlighted route
     const routeControl = L.Routing.control({
       waypoints: [
-        L.latLng(warehouseCoords[0], warehouseCoords[1]),
-        L.latLng(deliveryCoords[0], deliveryCoords[1])
+        L.latLng(...warehouseCoords),
+        L.latLng(...deliveryCoords)
       ],
       lineOptions: {
         styles: [{ color: '#d4af37', weight: 5 }]
       },
-      createMarker: function (i, wp) {
+      createMarker: (i, wp) => {
         const icons = [
           L.divIcon({ html: '<i class="bi bi-shop" style="color:#000;font-size:20px;"></i>', iconSize: [20, 20], className: '' }),
           L.divIcon({ html: '<i class="bi bi-house-door" style="color:#000;font-size:20px;"></i>', iconSize: [20, 20], className: '' })
@@ -177,15 +222,14 @@
       addWaypoints: false
     }).addTo(map);
 
-    // Add current truck location (interpolated between warehouse and delivery)
-    const truckLocation = interpolateLocation(warehouseCoords, deliveryCoords, 0.65); // ~65% progress
+    const truckLocation = interpolateLocation(warehouseCoords, deliveryCoords, 0.65);
     const truckIcon = L.divIcon({
       html: '<i class="bi bi-truck" style="font-size: 24px; color: #d4af37;"></i>',
       className: '',
       iconSize: [24, 24]
     });
-    L.marker(truckLocation, { icon: truckIcon }).addTo(map)
-      .bindPopup("Delivery Truck is here");
+
+    L.marker(truckLocation, { icon: truckIcon }).addTo(map).bindPopup("Delivery Truck is here");
 
     function interpolateLocation(start, end, fraction) {
       return [

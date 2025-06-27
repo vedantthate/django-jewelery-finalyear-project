@@ -7,14 +7,14 @@
 
 <div class="container">
   <!-- HERO SECTION -->
-  <section class="py-5 bg-light">
+  <section class="py-5 blog-header">
     <div class="row px-4 py-lg-4 align-items-center">
       <div class="col-lg-6">
-        <h1 class="h2 text-uppercase mb-0">Checkout</h1>
+        <h1 class="h2 text-uppercase text-lg-left">Checkout</h1>
       </div>
       <div class="col-lg-6 text-lg-end">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb justify-content-lg-end mb-0">
+          <ol class="breadcrumb justify-content-lg-end bg-transparent">
             <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Home</a></li>
             <li class="breadcrumb-item"><a href="{% url 'store:cart' %}">Cart</a></li>
             <li class="breadcrumb-item active" aria-current="page">Checkout</li>
@@ -187,7 +187,7 @@
               </button>
             </form>
 
-            <div class="text-center text-muted mt-2 mb-0">OR</div>
+            <hr>
 
             {% include 'store/payment.html' %}
           </div>

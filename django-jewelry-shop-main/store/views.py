@@ -814,6 +814,18 @@ def wishlist_view(request):
     return render(request, 'wishlist.html', {'wishlist_items': page_obj})
 
 @login_required
+def remove_multiple_wishlist(request):
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('selected_products')
+        if selected_ids:
+            Wishlist.objects.filter(user=request.user, product_id__in=selected_ids).delete()
+            messages.success(request, "🗑️ Selected products removed from your wishlist.")
+        else:
+            messages.warning(request, "⚠️ No products selected.")
+    return redirect('store:wishlist')
+
+
+@login_required
 def track_order(request):
     order = None
     searched = False
@@ -938,6 +950,9 @@ def invoice_view(request, order_id):
     # Fetch the order object
     order = get_object_or_404(Order, id=order_id, user=request.user)
     items = order.items.all()
+    
+    for item in items:
+        item.line_total = item.price * item.quantity
 
     # Calculate subtotal and total
     subtotal = sum(item.price * item.quantity for item in items)

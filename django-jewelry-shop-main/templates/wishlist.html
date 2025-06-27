@@ -7,49 +7,51 @@
 <div class="container py-4">
   <h2 class="text-center mb-4">Your Wishlist</h2>
 
-  <div class="row g-4">
-    {% if wishlist_items %}
+  {% if wishlist_items %}
+  <form method="post" action="{% url 'store:remove-multiple-wishlist' %}">
+    {% csrf_token %}
+    <div class="d-flex justify-content-end mb-3">
+      <button type="submit" class="btn btn-danger btn-sm">Remove Selected</button>
+    </div>
+
+    <div class="row g-4">
       {% for item in wishlist_items %}
-        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-          <a href="{% url 'store:product-detail' item.product.slug %}" class="card-link">
-            <div class="card h-100 border-0 shadow-sm product-card">
-              <div class="position-relative">
-                {% if item.product.product_image %}
-                  <img src="{{ item.product.product_image.url }}" class="card-img-top" alt="{{ item.product.title }}" style="height: 250px; object-fit: cover;">
-                {% else %}
-                  <img src="{% static 'img/product-1.jpg' %}" class="card-img-top" alt="{{ item.product.title }}" style="height: 250px; object-fit: cover;">
-                {% endif %}
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <a href="{% url 'store:product-detail' item.product.slug %}" class="text-decoration-none text-dark">
+          <div class="card h-100 border-0 shadow product-card position-relative">
 
-                <div class="product-overlay" onclick="event.stopPropagation();">
-                  <form action="{% url 'store:add-to-cart' %}" method="get" class="m-0">
-                    <input type="hidden" name="prod_id" value="{{ item.product.id }}">
-                    <button type="submit" class="btn btn-dark btn-sm">Add to Cart</button>
-                  </form>
-                </div>
-              </div>
+            <div class="position-relative">
 
-              <div class="card-body text-center d-flex flex-column justify-content-between">
-                <div>
-                  <h6 class="card-title mb-1 text-dark">{{ item.product.title }}</h6>
-                  <p class="text-muted fw-semibold">₹{{ item.product.price }}</p>
-                </div>
-                <div class="mt-2" onclick="event.stopPropagation();">
-                  <a href="{% url 'store:add-to-wishlist' item.product.id %}" class="btn btn-outline-danger btn-sm">
-                    <i class="fas fa-heart-broken"></i> Remove
-                  </a>
-                </div>
+              <!-- Checkbox -->
+              <input type="checkbox" name="selected_products" value="{{ item.product.id }}" class="wishlist-checkbox" onclick="event.stopPropagation();">
+
+              {% if item.product.product_image %}
+                <img src="{{ item.product.product_image.url }}" class="card-img-top" alt="{{ item.product.title }}" style="height: 250px; object-fit: cover;">
+              {% else %}
+                <img src="{% static 'img/product-1.jpg' %}" class="card-img-top" alt="{{ item.product.title }}" style="height: 250px; object-fit: cover;">
+              {% endif %}
+
+              <!-- Add to Cart Overlay -->
+              <div class="product-overlay" onclick="event.stopPropagation();">
+                <form action="{% url 'store:add-to-cart' %}" method="get" class="m-0 d-inline">
+                  <input type="hidden" name="prod_id" value="{{ item.product.id }}">
+                  <button type="submit" class="btn btn-dark btn-sm">Add to Cart</button>
+                </form>
               </div>
             </div>
-          </a>
-        </div>
-      {% endfor %}
-    {% else %}
-      <div class="col-12 text-center">
-        <p class="lead">Your wishlist is empty.</p>
-        <a href="{% url 'store:home' %}" class="btn btn-dark">Browse Products</a>
+
+            <div class="card-body text-center pt-2">
+              <h6 class="card-title mb-1">{{ item.product.title }}</h6>
+              <p class="text-muted mb-0 fw-semibold">₹{{ item.product.price }}</p>
+            </div>
+
+          </div>
+        </a>
       </div>
-    {% endif %}
-  </div>
+      {% endfor %}
+    </div>
+  </form>
+
   <!-- Pagination -->
   <div class="d-flex justify-content-center justify-content-lg-end mt-4">
     <nav aria-label="Page navigation">
@@ -58,15 +60,32 @@
           {% if wishlist_items.number == num %}
             <li class="page-item active"><span class="page-link">{{ num }}</span></li>
           {% else %}
-            <li class="page-item"><a class="page-link" href="?sorting={{ sort_option }}&page={{ num }}">{{ num }}</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
           {% endif %}
         {% endfor %}
       </ul>
     </nav>
   </div>
+
+  {% else %}
+  <div class="text-center">
+    <p class="lead">Your wishlist is empty.</p>
+    <a href="{% url 'store:home' %}" class="btn btn-dark">Browse Products</a>
+  </div>
+  {% endif %}
 </div>
 
 <style>
+  .wishlist-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: red;
+  }
 
   .product-overlay {
     position: absolute;
@@ -82,6 +101,5 @@
   .product-card:hover .product-overlay {
     opacity: 1;
   }
-
 </style>
 {% endblock %}
